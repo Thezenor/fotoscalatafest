@@ -147,6 +147,17 @@ const DEFAULT_PAYMENTS: Payments = {
 export const getPayments = () => getSetting<Payments>("payments", DEFAULT_PAYMENTS);
 export const setPayments = (v: Payments, actorId?: string | null) => setSetting("payments", v, actorId);
 
+// ── Email transaccional (aviso de aprobación) ──
+export interface EmailConfig {
+  enabled: boolean;
+  provider: string; // "resend"
+  apiKey: string | null;
+  fromEmail: string | null; // p.ej. "Calatafest Fotos <fotos@fotoscalatafest.com>"
+}
+const DEFAULT_EMAIL: EmailConfig = { enabled: false, provider: "resend", apiKey: null, fromEmail: null };
+export const getEmailConfig = () => getSetting<EmailConfig>("email", DEFAULT_EMAIL);
+export const setEmailConfig = (v: EmailConfig, actorId?: string | null) => setSetting("email", v, actorId);
+
 // ── TV en directo (pantalla de proyección) ──
 export interface TvConfig {
   template: string; // clave de plantilla: cinematic | neon | stack | mosaico | destacadas

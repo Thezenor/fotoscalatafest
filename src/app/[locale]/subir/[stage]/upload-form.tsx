@@ -20,6 +20,7 @@ export interface UploadLabels extends UploaderLabels {
   readTerms: string;
   error: string;
   hint: string;
+  notifyEmail: string;
 }
 
 export function UploadForm({
@@ -35,7 +36,7 @@ export function UploadForm({
   const [age, setAge] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(false);
-  const [fields, setFields] = useState({ name: "", instagram: "", tiktok: "", comment: "" });
+  const [fields, setFields] = useState({ name: "", instagram: "", tiktok: "", comment: "", notifyEmail: "" });
 
   const canSubmit = rights && age && !!file && !sending;
 
@@ -53,6 +54,7 @@ export function UploadForm({
       fd.append("instagram", fields.instagram);
       fd.append("tiktok", fields.tiktok);
       fd.append("comment", fields.comment);
+      fd.append("notifyEmail", fields.notifyEmail);
       const res = await fetch("/api/photos", { method: "POST", body: fd });
       if (!res.ok) throw new Error("upload_failed");
       const data = await res.json().catch(() => ({}));
@@ -87,6 +89,13 @@ export function UploadForm({
         <Input name="tiktok" placeholder={labels.tiktok} value={fields.tiktok} onChange={set("tiktok")} />
       </div>
       <Textarea name="comment" placeholder={labels.comment} value={fields.comment} onChange={set("comment")} />
+      <Input
+        name="notifyEmail"
+        type="email"
+        placeholder={labels.notifyEmail}
+        value={fields.notifyEmail}
+        onChange={set("notifyEmail")}
+      />
 
       <div className="flex flex-col gap-1 pt-1">
         <LegalCheckbox checked={rights} onChange={setRights}>

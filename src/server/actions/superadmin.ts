@@ -13,7 +13,7 @@ import {
   updateStage,
   deleteStage,
 } from "@/server/services/admin.service";
-import { setTvConfig, type TvConfig } from "@/server/services/settings.service";
+import { setTvConfig, setEmailConfig, type TvConfig, type EmailConfig } from "@/server/services/settings.service";
 import type { Role } from "@prisma/client";
 
 const ROLES = ["SUPERADMIN", "ADMIN", "MODERATOR"] as const;
@@ -121,5 +121,22 @@ export async function saveTvConfigAction(cfg: TvConfig) {
   await setTvConfig(cfg, actor.id);
   revalidatePath("/superadmin/tv");
   revalidatePath("/live");
+  return { ok: true };
+}
+
+// ── Email transaccional ──
+
+export async function saveEmailConfigAction(cfg: EmailConfig) {
+  const actor = await requireRole("SUPERADMIN");
+  await setEmailConfig(
+    {
+      enabled: !!cfg.enabled,
+      provider: cfg.provider || "resend",
+      apiKey: cfg.apiKey?.trim() || null,
+      fromEmail: cfg.fromEmail?.trim() || null,
+    },
+    actor.id,
+  );
+  revalidatePath("/superadmin/email");
   return { ok: true };
 }

@@ -1,6 +1,7 @@
 import { prisma } from "@/server/db";
 import { publicUrl } from "@/server/services/storage.service";
 import { logAudit } from "@/server/services/audit.service";
+import { sendApprovalEmail } from "@/server/services/notification.service";
 import type { AiResult } from "@/server/services/ai-moderation.service";
 import type { Photo as PhotoDTO, Day } from "@/lib/mock-data";
 import type { Photo as DbPhoto, Stage, PhotoStatus, Prisma } from "@prisma/client";
@@ -215,6 +216,12 @@ export async function moderatePhoto(
     ip: opts.ip ?? null,
     metadata: { action },
   });
+
+  // Primer paso a APPROVED con email de aviso → notifica una sola vez.
+  if (data.status === "APPROVED" && updated.notifyEmail && !updated.notifiedAt) {
+    await prisma.photo.update({ where: { id }, data: { notifiedAt: new Date() } });
+    void sendApprovalEmail({ to: updated.notifyEmail, photoId: id });
+  }
   return updated;
 }
 
@@ -230,6 +237,7 @@ export async function createUploadedPhoto(input: {
   sizeBytes?: number;
   author?: { name?: string; instagram?: string; tiktok?: string };
   comment?: string;
+  notifyEmail?: string | null;
   consentId?: string | null;
   ip?: string | null;
   uploaderHash?: string | null;
@@ -256,6 +264,7 @@ export async function createUploadedPhoto(input: {
       authorInstagram: input.author?.instagram ?? null,
       authorTiktok: input.author?.tiktok ?? null,
       comment: input.comment ?? null,
+      notifyEmail: input.notifyEmail ?? null,
       consentId: input.consentId ?? null,
       uploaderIp: input.ip ?? null,
       uploaderHash: input.uploaderHash ?? null,

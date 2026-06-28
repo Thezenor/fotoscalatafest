@@ -14,6 +14,7 @@ import {
   Tv,
   LineChart,
   LifeBuoy,
+  Mail,
   ArrowRight,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -45,6 +46,7 @@ export default async function SuperadminPage({
     { key: "removals", icon: FileWarning, href: "/superadmin/retiradas", ready: true, external: false, badge: openRemovals },
     { key: "branding", icon: Palette, href: "/superadmin/branding", ready: true, external: false, badge: 0 },
     { key: "ia", icon: Bot, href: "/superadmin/ia", ready: true, external: false, badge: 0 },
+    { key: "email", icon: Mail, href: "/superadmin/email", ready: true, external: false, badge: 0 },
     { key: "templates", icon: LayoutTemplate, href: "/superadmin/plantillas", ready: true, external: false, badge: 0 },
     { key: "payments", icon: CreditCard, href: "/superadmin/pagos", ready: true, external: false, badge: 0 },
     { key: "tv", icon: Tv, href: "/superadmin/tv", ready: true, external: false, badge: 0 },

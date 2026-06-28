@@ -44,6 +44,7 @@ export default async function UploadPage({
           readTerms: t("readTerms"),
           error: t("error"),
           hint: t("hint"),
+          notifyEmail: t("notifyEmail"),
         }}
       />
     </main>

@@ -143,6 +143,10 @@ model Photo {
   authorTiktok    String?
   comment         String?
 
+  // Aviso opcional al subidor cuando su foto se aprueba (RGPD: dato opcional, consentido).
+  notifyEmail  String?
+  notifiedAt   DateTime? // evita avisar dos veces
+
   // Etiquetas de exhibición (día/hora del festival)
   day       String? // "VIE" | "SÁB"
   timeLabel String? // "23:10"

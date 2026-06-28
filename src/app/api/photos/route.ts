@@ -16,6 +16,13 @@ export const runtime = "nodejs";
 
 const MAX_BYTES = 12 * 1024 * 1024; // 12 MB
 
+// Validación mínima de email; null si vacío o no válido (campo opcional).
+function normalizeEmail(raw: string): string | null {
+  const e = raw.trim().toLowerCase();
+  if (!e) return null;
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) && e.length <= 200 ? e : null;
+}
+
 // GET /api/photos?stage=&day=&limit=&offset= → galería pública (solo APPROVED).
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -114,6 +121,7 @@ export async function POST(req: NextRequest) {
       tiktok: String(form.get("tiktok") ?? "") || undefined,
     },
     comment: String(form.get("comment") ?? "") || undefined,
+    notifyEmail: normalizeEmail(String(form.get("notifyEmail") ?? "")),
     consentId: consent.id,
     ip,
     uploaderHash,
