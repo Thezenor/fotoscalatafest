@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Search } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Logo } from "@/components/ui/Logo";
@@ -5,9 +6,24 @@ import { IconButton } from "@/components/ui/IconButton";
 import { SiteNav } from "@/components/content/SiteNav";
 import { GalleryView } from "./gallery-view";
 import { listApprovedPhotos, listFeaturedPhotos, listStages } from "@/server/services/photo.service";
+import { localizedAlternates } from "@/lib/seo";
 
 // Lee de la DB (Prisma) → render dinámico.
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "gallery" });
+  return {
+    title: t("title"),
+    alternates: localizedAlternates(locale, "/galeria"),
+    openGraph: { title: `${t("title")} · Calatafest Fotos`, url: `/${locale}/galeria` },
+  };
+}
 
 export default async function GalleryPage({
   params,

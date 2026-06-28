@@ -10,7 +10,9 @@ import { StageCard } from "@/components/content/StageCard";
 import { SponsorStrip } from "@/components/content/SponsorStrip";
 import { LangSwitcher } from "@/components/content/LangSwitcher";
 import { SiteNav } from "@/components/content/SiteNav";
-import { listStages } from "@/server/services/photo.service";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { listStages, getActiveEvent } from "@/server/services/photo.service";
+import { siteUrl, absoluteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -24,10 +26,25 @@ export default async function LandingPage({
   const t = await getTranslations("landing");
   const tc = await getTranslations("common");
   const ts = await getTranslations("superadmin");
-  const stages = await listStages();
+  const [stages, event] = await Promise.all([listStages(), getActiveEvent()]);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event?.name ?? "Calatafest",
+    url: `${siteUrl()}/${locale}`,
+    image: absoluteUrl("/demo/p10.png"),
+    ...(event?.startsAt ? { startDate: event.startsAt.toISOString() } : {}),
+    ...(event?.endsAt ? { endDate: event.endsAt.toISOString() } : {}),
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: { "@type": "Place", name: "Calatayud", address: "Calatayud, España" },
+    organizer: { "@type": "Organization", name: "Calatafest", url: "https://www.calatafest.es" },
+    description: t("subtitle"),
+  };
 
   return (
     <main className="w-full flex-1">
+      <JsonLd data={jsonLd} />
       <SiteNav floating labels={{ gallery: tc("viewGallery"), upload: tc("uploadPhoto") }} />
 
       {/* HERO */}

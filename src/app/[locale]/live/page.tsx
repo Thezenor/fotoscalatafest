@@ -9,6 +9,9 @@ import {
 // Pantalla del recinto: 16:9, sin chrome de navegación.
 export const dynamic = "force-dynamic";
 
+// Pantalla de proyección: no se indexa.
+export const metadata = { robots: { index: false, follow: false } };
+
 const VARIANTS: LiveVariant[] = ["destacadas", "carrusel", "mosaico"];
 
 export default async function LivePage({

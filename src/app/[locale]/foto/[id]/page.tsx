@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Download, MapPin, Calendar, Mic } from "lucide-react";
@@ -9,10 +10,36 @@ import { QRBlock } from "@/components/content/QRBlock";
 import { ShareButton } from "@/components/content/ShareButton";
 import { RemovalLink } from "@/components/content/RemovalLink";
 import { SiteNav } from "@/components/content/SiteNav";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { dayLabel } from "@/lib/mock-data";
 import { getPublicPhoto } from "@/server/services/photo.service";
+import { absoluteUrl, localizedAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { locale, id } = await params;
+  const photo = await getPublicPhoto(id);
+  if (!photo) return { title: "Calatafest Fotos" };
+  const title = photo.author?.name ?? photo.author?.instagram ?? photo.stageName;
+  const og = absoluteUrl(photo.url);
+  return {
+    title,
+    description: `${photo.stageName} · ${dayLabel(photo.day, locale)} — Calatafest Fotos`,
+    alternates: localizedAlternates(locale, `/foto/${id}`),
+    openGraph: {
+      type: "article",
+      title: `${title} · Calatafest Fotos`,
+      url: `/${locale}/foto/${id}`,
+      images: [{ url: og, width: photo.width, height: photo.height, alt: photo.stageName }],
+    },
+    twitter: { card: "summary_large_image", images: [og] },
+  };
+}
 
 export default async function PhotoPage({
   params,
@@ -30,8 +57,18 @@ export default async function PhotoPage({
   const chip =
     "inline-flex items-center gap-1.5 rounded-pill border border-line bg-surface-2 px-3 py-1.5 font-mono text-[11px] uppercase text-white";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    contentUrl: absoluteUrl(photo.url),
+    name: photo.stageName,
+    creditText: photo.author?.name ?? photo.author?.instagram ?? "Calatafest",
+    isPartOf: { "@type": "Event", name: "Calatafest" },
+  };
+
   return (
     <main className="w-full flex-1">
+      <JsonLd data={jsonLd} />
       <SiteNav labels={{ gallery: tc("viewGallery"), upload: tc("uploadPhoto") }} />
 
       {/* Cabecera móvil */}
