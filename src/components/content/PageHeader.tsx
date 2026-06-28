@@ -1,19 +1,21 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
-/** Cabecera de pantalla interior: botón atrás circular + título/eyebrow. */
+/** Cabecera de pantalla interior: botón atrás circular + título/eyebrow + inicio. */
 export function PageHeader({
   backHref,
   title,
   subtitle,
   eyebrow,
   right,
+  home = true,
 }: {
   backHref: string;
   title: string;
   subtitle?: string;
   eyebrow?: string;
   right?: React.ReactNode;
+  home?: boolean;
 }) {
   return (
     <header className="flex items-center gap-3 px-5 py-4">
@@ -36,6 +38,15 @@ export function PageHeader({
         {subtitle && <p className="font-body text-[13px] text-mist">{subtitle}</p>}
       </div>
       {right}
+      {home && (
+        <Link
+          href="/"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-white"
+          aria-label="home"
+        >
+          <Home className="h-5 w-5" />
+        </Link>
+      )}
     </header>
   );
 }

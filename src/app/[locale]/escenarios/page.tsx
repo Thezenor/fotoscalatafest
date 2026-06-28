@@ -24,7 +24,7 @@ export default async function StagesPage({
 
       {/* Cabecera móvil */}
       <div className="lg:hidden">
-        <PageHeader backHref="/" title={t("title")} subtitle={t("subtitle")} />
+        <PageHeader backHref="/" home={false} title={t("title")} subtitle={t("subtitle")} />
       </div>
 
       <div className="mx-auto max-w-5xl px-5 lg:px-8">

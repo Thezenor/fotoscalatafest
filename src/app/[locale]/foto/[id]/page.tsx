@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, MapPin, Calendar, Mic, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Download, MapPin, Calendar, Mic, ShoppingBag, Home } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui/Button";
@@ -81,7 +81,16 @@ export default async function PhotoPage({
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <ShareButton label={tc("share")} variant="secondary" />
+        <div className="flex items-center gap-2">
+          <ShareButton label={tc("share")} variant="secondary" />
+          <Link
+            href="/"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-white"
+            aria-label="home"
+          >
+            <Home className="h-5 w-5" />
+          </Link>
+        </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-5 pb-12 lg:px-8 lg:pt-8">

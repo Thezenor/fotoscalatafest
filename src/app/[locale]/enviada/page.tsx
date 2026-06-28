@@ -47,6 +47,9 @@ export default async function ConfirmPage({
         <Link href="/galeria" className={buttonClass({ className: "w-full uppercase" })}>
           {tc("viewGallery")}
         </Link>
+        <Link href="/" className={buttonClass({ variant: "secondary", className: "w-full uppercase" })}>
+          {tc("backHome")}
+        </Link>
         <ShareButton label={tc("share")} />
       </div>
     </main>

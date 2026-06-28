@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getPublicPhoto } from "@/server/services/photo.service";
@@ -38,9 +38,14 @@ export default async function BuyPage({
 
   return (
     <main className="mx-auto w-full max-w-md flex-1 px-5 py-6">
-      <Link href={`/foto/${id}`} className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2">
-        <ArrowLeft className="h-5 w-5" />
-      </Link>
+      <div className="mb-4 flex items-center justify-between">
+        <Link href={`/foto/${id}`} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2">
+          <ArrowLeft className="h-5 w-5" />
+        </Link>
+        <Link href="/" aria-label="home" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-white">
+          <Home className="h-5 w-5" />
+        </Link>
+      </div>
 
       <div className="overflow-hidden rounded-lg border border-line">
         <Image src={photo.url} alt={photo.stageName} width={photo.width} height={photo.height} sizes="480px" className="h-auto w-full" />

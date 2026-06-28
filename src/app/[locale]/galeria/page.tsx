@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Search } from "lucide-react";
+import { Home } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/ui/Logo";
-import { IconButton } from "@/components/ui/IconButton";
 import { SiteNav } from "@/components/content/SiteNav";
 import { SiteFooter } from "@/components/content/SiteFooter";
 import { GalleryView } from "./gallery-view";
@@ -58,10 +58,16 @@ export default async function GalleryPage({
 
       {/* Cabecera móvil */}
       <header className="flex items-center justify-between px-5 py-4 lg:hidden">
-        <Logo size={26} wordSize={21} word={t("title").toUpperCase()} />
-        <IconButton aria-label="search">
-          <Search className="h-5 w-5" />
-        </IconButton>
+        <Link href="/" aria-label={tc("back")}>
+          <Logo size={26} wordSize={21} word={t("title").toUpperCase()} />
+        </Link>
+        <Link
+          href="/"
+          aria-label="home"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-white"
+        >
+          <Home className="h-5 w-5" />
+        </Link>
       </header>
 
       {/* Título escritorio */}

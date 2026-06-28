@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Save, Tv, ExternalLink, Copy, Check } from "lucide-react";
 import { saveTvConfigAction } from "@/server/actions/superadmin";
 import { TV_TEMPLATES, type LiveVariant } from "@/components/live/templates";
@@ -18,6 +18,20 @@ export function TvConfig({ initial, locale, siteUrl }: { initial: TvConfigDTO; l
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // El preview se renderiza a tamaño TV (1280×720) y se escala para encajar
+  // en la caja 16:9 → las proporciones son las de una pantalla real, no desbordan.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.42);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const apply = () => setScale(el.clientWidth / 1280);
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // URL absoluta de la pantalla (para abrir/compartir) y relativa (para el iframe de preview).
   const livePath = `/${locale}/live?variant=${cfg.template}&interval=${cfg.intervalMs}`;
@@ -118,12 +132,19 @@ export function TvConfig({ initial, locale, siteUrl }: { initial: TvConfigDTO; l
       {/* Columna de previsualización en vivo */}
       <div className="flex flex-col gap-2">
         <p className="font-mono text-xs uppercase tracking-wide text-mist">Previsualización en directo (16:9)</p>
-        <div className="relative aspect-video w-full overflow-hidden rounded-md border border-line bg-ink-pure">
+        <div ref={boxRef} className="relative aspect-video w-full overflow-hidden rounded-md border border-line bg-ink-pure">
           <iframe
             key={previewKey}
             src={livePath}
             title="Previsualización TV"
-            className="absolute left-0 top-0 h-full w-full"
+            tabIndex={-1}
+            style={{
+              width: 1280,
+              height: 720,
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+            }}
+            className="absolute left-0 top-0 border-0"
           />
         </div>
         <p className="font-body text-[12px] text-mist">
