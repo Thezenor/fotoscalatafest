@@ -119,6 +119,8 @@
     "exportDesc": "Download all approved photos + metadata.",
     "audit": "Audit log",
     "auditDesc": "Record of every system action.",
+    "removals": "Removals",
+    "removalsDesc": "Photo removal requests (GDPR).",
     "soon": "Coming soon",
     "openPanel": "Panel access"
   },

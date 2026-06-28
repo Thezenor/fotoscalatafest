@@ -4,12 +4,14 @@ import {
   Users,
   Download,
   ScrollText,
+  FileWarning,
   ArrowRight,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { signOut } from "@/auth";
 import { requireRole } from "@/server/auth/guards";
+import { countOpenRemovals } from "@/server/services/admin.service";
 import { Logo } from "@/components/ui/Logo";
 import { Badge } from "@/components/ui/Badge";
 
@@ -25,13 +27,15 @@ export default async function SuperadminPage({
   const user = await requireRole("SUPERADMIN");
   const t = await getTranslations("superadmin");
   const tAuth = await getTranslations("auth");
+  const openRemovals = await countOpenRemovals();
 
   const cards = [
-    { key: "moderation", icon: ImageIcon, href: "/admin", ready: true, external: false },
-    { key: "events", icon: CalendarDays, href: "/superadmin/eventos", ready: true, external: false },
-    { key: "users", icon: Users, href: "/superadmin/usuarios", ready: true, external: false },
-    { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true },
-    { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false },
+    { key: "moderation", icon: ImageIcon, href: "/admin", ready: true, external: false, badge: 0 },
+    { key: "events", icon: CalendarDays, href: "/superadmin/eventos", ready: true, external: false, badge: 0 },
+    { key: "users", icon: Users, href: "/superadmin/usuarios", ready: true, external: false, badge: 0 },
+    { key: "removals", icon: FileWarning, href: "/superadmin/retiradas", ready: true, external: false, badge: openRemovals },
+    { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true, badge: 0 },
+    { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false, badge: 0 },
   ] as const;
 
   return (
@@ -64,7 +68,7 @@ export default async function SuperadminPage({
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map(({ key, icon: Icon, href, ready, external }) => {
+        {cards.map(({ key, icon: Icon, href, ready, external, badge }) => {
           const inner = (
             <div
               className={`flex h-full flex-col gap-3 rounded-[16px] border border-line bg-surface p-5 transition ${
@@ -73,7 +77,9 @@ export default async function SuperadminPage({
             >
               <div className="flex items-center justify-between">
                 <Icon className="h-7 w-7 text-brand" />
-                {ready ? (
+                {badge > 0 ? (
+                  <Badge tone="danger">{badge}</Badge>
+                ) : ready ? (
                   <ArrowRight className="h-5 w-5 text-mist" />
                 ) : (
                   <Badge tone="neutral">{t("soon")}</Badge>

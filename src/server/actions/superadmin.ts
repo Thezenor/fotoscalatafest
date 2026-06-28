@@ -8,6 +8,7 @@ import {
   setUserRole,
   setUserActive,
   updateEventConfig,
+  resolveRemoval,
 } from "@/server/services/admin.service";
 import type { Role } from "@prisma/client";
 
@@ -54,6 +55,12 @@ export async function toggleActiveAction(id: string, isActive: boolean) {
   const actor = await requireRole("SUPERADMIN");
   await setUserActive(id, isActive, actor.id);
   revalidatePath("/superadmin/usuarios");
+}
+
+export async function resolveRemovalAction(id: string) {
+  const actor = await requireRole("SUPERADMIN");
+  await resolveRemoval(id, actor.id);
+  revalidatePath("/superadmin/retiradas");
 }
 
 export async function updateEventAction(

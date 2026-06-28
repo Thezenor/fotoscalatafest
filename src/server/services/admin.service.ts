@@ -89,6 +89,41 @@ export async function updateEventConfig(
   await logAudit({ action: "EVENT_CONFIG_UPDATED", entityType: "Event", entityId: id, userId: actorId ?? null, metadata: data });
 }
 
+// ─────────── Estadísticas de moderación ───────────
+
+export async function getModerationStats(eventId: string) {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const [pending, approved, uploadedToday, onScreen] = await Promise.all([
+    prisma.photo.count({ where: { eventId, status: "PENDING" } }),
+    prisma.photo.count({ where: { eventId, status: "APPROVED" } }),
+    prisma.photo.count({ where: { eventId, createdAt: { gte: startOfDay } } }),
+    prisma.photo.count({ where: { eventId, status: "APPROVED", onScreen: true } }),
+  ]);
+  return { pending, approved, uploadedToday, onScreen };
+}
+
+// ─────────── Solicitudes de retirada (RGPD) ───────────
+
+export async function listRemovalRequests() {
+  return prisma.removalRequest.findMany({
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    include: { photo: { select: { id: true, stage: { select: { name: true } } } } },
+  });
+}
+
+export async function countOpenRemovals() {
+  return prisma.removalRequest.count({ where: { status: "OPEN" } });
+}
+
+export async function resolveRemoval(id: string, actorId?: string | null) {
+  await prisma.removalRequest.update({
+    where: { id },
+    data: { status: "RESOLVED", resolvedAt: new Date() },
+  });
+  await logAudit({ action: "REMOVAL_RESOLVED", entityType: "RemovalRequest", entityId: id, userId: actorId ?? null });
+}
+
 // ─────────── Datos de exportación ───────────
 
 export async function getExportData(eventId: string) {

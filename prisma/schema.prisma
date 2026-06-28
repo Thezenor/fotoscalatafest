@@ -140,6 +140,8 @@ model Photo {
   uploaderIp   String?
   uploaderHash String? // fingerprint anónimo del subidor
 
+  removalRequests RemovalRequest[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -147,6 +149,25 @@ model Photo {
   @@index([status, createdAt])
   @@index([status, featured])
   @@index([status, onScreen])
+}
+
+enum RemovalStatus {
+  OPEN
+  RESOLVED
+}
+
+model RemovalRequest {
+  id        String        @id @default(cuid())
+  photoId   String?
+  photo     Photo?        @relation(fields: [photoId], references: [id], onDelete: SetNull)
+  email     String // contacto del solicitante
+  reason    String
+  status    RemovalStatus @default(OPEN)
+  ip        String?
+  createdAt DateTime      @default(now())
+  resolvedAt DateTime?
+
+  @@index([status, createdAt])
 }
 
 model Consent {

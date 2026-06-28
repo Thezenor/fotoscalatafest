@@ -29,11 +29,13 @@ export function AdminModeration({
   locale,
   filters,
   labels,
+  stats,
 }: {
   initial: Photo[];
   locale: string;
   filters: ChipOption[];
   labels: ModerationViewLabels;
+  stats?: { pending: number; uploadedToday: number; onScreen: number };
 }) {
   const [queue, setQueue] = useState<Photo[]>(initial);
   const [filter, setFilter] = useState("all");
@@ -83,9 +85,9 @@ export function AdminModeration({
     <>
       {/* Stats (móvil compactas / escritorio en grid arriba via página) */}
       <div className="mb-4 grid grid-cols-3 gap-2 lg:hidden">
-        <MiniStat value={String(pending)} label={labels.pendingShort} tone="brand" />
-        <MiniStat value="312" label={labels.todayOk} tone="success" />
-        <MiniStat value="8" label={labels.onScreen} tone="white" />
+        <MiniStat value={String(stats?.pending ?? pending)} label={labels.pendingShort} tone="brand" />
+        <MiniStat value={String(stats?.uploadedToday ?? 0)} label={labels.todayOk} tone="success" />
+        <MiniStat value={String(stats?.onScreen ?? 0)} label={labels.onScreen} tone="white" />
       </div>
 
       <div className="mb-4">

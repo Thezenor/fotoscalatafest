@@ -119,6 +119,8 @@
     "exportDesc": "Descarregar totes les fotos aprovades + metadades.",
     "audit": "Auditoria",
     "auditDesc": "Registre de totes les accions del sistema.",
+    "removals": "Retirades",
+    "removalsDesc": "Sol·licituds de retirada de fotos (RGPD).",
     "soon": "Properament",
     "openPanel": "Accés panell"
   },

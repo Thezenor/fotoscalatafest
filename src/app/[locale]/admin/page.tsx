@@ -7,7 +7,8 @@ import { StatCard } from "@/components/admin/StatCard";
 import { AdminModeration } from "@/components/admin/AdminModeration";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClass } from "@/components/ui/Button";
-import { listForModeration } from "@/server/services/photo.service";
+import { listForModeration, getActiveEvent } from "@/server/services/photo.service";
+import { getModerationStats } from "@/server/services/admin.service";
 
 export const dynamic = "force-dynamic";
 
@@ -22,8 +23,12 @@ export default async function AdminPage({
   const t = await getTranslations("admin");
   const tg = await getTranslations("gallery");
 
-  const board = await listForModeration();
-  const pendingCount = board.filter((p) => p.status === "pending").length;
+  const event = await getActiveEvent();
+  const [board, stats] = await Promise.all([
+    listForModeration(),
+    event ? getModerationStats(event.id) : Promise.resolve({ pending: 0, approved: 0, uploadedToday: 0, onScreen: 0 }),
+  ]);
+  const pendingCount = stats.pending;
 
   const filters = [
     { value: "pending", label: t("pending") },
@@ -109,13 +114,13 @@ export default async function AdminPage({
 
         {/* Stats escritorio */}
         <div className="mb-5 hidden grid-cols-4 gap-4 lg:grid">
-          <StatCard label={t("pending")} value={String(pendingCount)} tone="brand" />
-          <StatCard label={t("approved")} value="1.248" tone="success" />
-          <StatCard label={t("uploadedToday")} value="312" />
-          <StatCard label={t("onScreen")} value="8" />
+          <StatCard label={t("pending")} value={String(stats.pending)} tone="brand" />
+          <StatCard label={t("approved")} value={String(stats.approved)} tone="success" />
+          <StatCard label={t("uploadedToday")} value={String(stats.uploadedToday)} />
+          <StatCard label={t("onScreen")} value={String(stats.onScreen)} />
         </div>
 
-        <AdminModeration initial={board} locale={locale} filters={filters} labels={labels} />
+        <AdminModeration initial={board} locale={locale} filters={filters} labels={labels} stats={stats} />
       </main>
     </div>
   );
