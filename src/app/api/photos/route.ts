@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
+import crypto from "crypto";
 import {
   listApprovedPhotos,
   createUploadedPhoto,
@@ -10,6 +11,7 @@ import { createConsent } from "@/server/services/consent.service";
 import { saveObject } from "@/server/services/storage.service";
 import { makeThumbnail, makeWatermarked } from "@/server/services/image.service";
 import { analyzeImage } from "@/server/services/ai-moderation.service";
+import { rateLimit, clientIpFrom } from "@/server/services/ratelimit.service";
 
 export const runtime = "nodejs";
 
@@ -28,6 +30,13 @@ export async function GET(req: NextRequest) {
 
 // POST /api/photos (multipart) → subida real. La foto entra como PENDING.
 export async function POST(req: NextRequest) {
+  // Anti-spam: máx. 30 subidas por IP cada 10 min (fail-open si Redis cae).
+  const ipForLimit = clientIpFrom(req.headers);
+  const limit = await rateLimit(`upload:${ipForLimit}`, 30, 600);
+  if (!limit.ok) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
   const event = await getActiveEvent();
   if (!event) return NextResponse.json({ error: "no_active_event" }, { status: 400 });
 
@@ -52,6 +61,12 @@ export async function POST(req: NextRequest) {
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  // Huella anónima del subidor (forense anti-spam, sin guardar datos personales).
+  const uploaderHash = crypto
+    .createHash("sha256")
+    .update(`${ip ?? ""}|${req.headers.get("user-agent") ?? ""}`)
+    .digest("hex")
+    .slice(0, 32);
 
   // Re-encode con sharp: corrige orientación y ELIMINA EXIF/metadatos.
   const input = Buffer.from(await file.arrayBuffer());
@@ -103,6 +118,7 @@ export async function POST(req: NextRequest) {
     comment: String(form.get("comment") ?? "") || undefined,
     consentId: consent.id,
     ip,
+    uploaderHash,
   });
 
   // Moderación IA (Google Vision). Si no hay credenciales, queda PENDING (manual).

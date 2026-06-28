@@ -164,6 +164,7 @@ export async function createUploadedPhoto(input: {
   comment?: string;
   consentId?: string | null;
   ip?: string | null;
+  uploaderHash?: string | null;
 }) {
   const event = await getActiveEvent();
   if (!event) throw new Error("NO_ACTIVE_EVENT");
@@ -189,6 +190,7 @@ export async function createUploadedPhoto(input: {
       comment: input.comment ?? null,
       consentId: input.consentId ?? null,
       uploaderIp: input.ip ?? null,
+      uploaderHash: input.uploaderHash ?? null,
     },
   });
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/server/db";
 import { logAudit } from "@/server/services/audit.service";
+import { rateLimit, clientIpFrom } from "@/server/services/ratelimit.service";
 
 const schema = z.object({
   email: z.string().email(),
@@ -14,6 +15,11 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  // Anti-spam: máx. 5 solicitudes de retirada por IP cada 10 min.
+  const ipLimit = clientIpFrom(req.headers);
+  if (!(await rateLimit(`removal:${ipLimit}`, 5, 600)).ok) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   const body = await req.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
