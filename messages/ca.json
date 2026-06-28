@@ -127,6 +127,10 @@
     "iaDesc": "Activar i configurar les claus de la IA.",
     "terms": "Termes",
     "termsDesc": "Editar termes i condicions.",
+    "templates": "Plantilles",
+    "templatesDesc": "Plantilles vertical/horitzontal amb logo del patrocinador.",
+    "payments": "Pagaments i preus",
+    "paymentsDesc": "Venda de fotos: Stripe, PayPal i preus.",
     "soon": "Properament",
     "openPanel": "Accés panell"
   },

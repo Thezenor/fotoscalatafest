@@ -26,6 +26,7 @@ export default async function EventsPage({
     watermarkPosition: e.watermarkPosition,
     watermarkOpacity: e.watermarkOpacity,
     autoApproveOnAiClean: e.autoApproveOnAiClean,
+    sponsors: Array.isArray(e.sponsors) ? (e.sponsors as string[]) : [],
     photos: e._count.photos,
     stages: e._count.stages,
     accessUrl: `${site}/api/e/${e.slug}?t=${e.accessQrToken}`,

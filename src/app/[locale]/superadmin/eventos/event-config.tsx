@@ -16,6 +16,7 @@ export interface EventRow {
   watermarkPosition: string;
   watermarkOpacity: number;
   autoApproveOnAiClean: boolean;
+  sponsors: string[];
   photos: number;
   stages: number;
   accessUrl: string;
@@ -29,13 +30,17 @@ export function EventConfig({ event }: { event: EventRow }) {
     watermarkOpacity: event.watermarkOpacity,
     autoApproveOnAiClean: event.autoApproveOnAiClean,
   });
+  const [sponsors, setSponsors] = useState(event.sponsors.join("\n"));
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
 
   function save() {
     setSaved(false);
     startTransition(async () => {
-      await updateEventAction(event.id, form);
+      await updateEventAction(event.id, {
+        ...form,
+        sponsors: sponsors.split("\n").map((s) => s.trim()).filter(Boolean),
+      });
       setSaved(true);
     });
   }
@@ -92,6 +97,16 @@ export function EventConfig({ event }: { event: EventRow }) {
               value={form.watermarkOpacity}
               onChange={(e) => setForm((f) => ({ ...f, watermarkOpacity: Number(e.target.value) }))}
               className="w-40 accent-[var(--brand)]"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 font-body text-sm text-white">
+            Patrocinadores del evento (uno por línea; vacío = usa los globales)
+            <textarea
+              value={sponsors}
+              onChange={(e) => setSponsors(e.target.value)}
+              rows={3}
+              className="rounded-sm border border-line bg-surface-2 px-3 py-2 font-body text-sm text-white outline-none focus:border-brand"
             />
           </label>
 

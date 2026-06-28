@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, MapPin, Calendar, Mic } from "lucide-react";
+import { ArrowLeft, Download, MapPin, Calendar, Mic, ShoppingBag } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui/Button";
@@ -126,6 +126,10 @@ export default async function PhotoPage({
               </a>
               <ShareButton label="" url={`/foto/${photo.id}`} variant="secondary" />
             </div>
+
+            <Link href={`/comprar/${photo.id}`} className={buttonClass({ variant: "secondary", size: "md", className: "w-full uppercase" })}>
+              <ShoppingBag className="h-5 w-5" /> Conseguir / imprimir
+            </Link>
 
             <QRBlock
               value={`https://fotoscalatafest.com/foto/${photo.id}`}

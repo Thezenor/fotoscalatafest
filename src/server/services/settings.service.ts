@@ -25,6 +25,39 @@ export interface Terms {
   content: string;
 }
 
+export type LogoPosition = "bottom-right" | "bottom-left" | "top-right" | "top-left" | "center";
+
+export interface TemplateConfig {
+  showSponsorLogo: boolean;
+  logoPosition: LogoPosition;
+  logoScalePct: number; // % del ancho que ocupa el logo
+  frameColor: string | null; // marco opcional (hex) o null
+  framePx: number;
+}
+
+export interface Templates {
+  vertical: TemplateConfig;
+  horizontal: TemplateConfig;
+}
+
+export interface Payments {
+  currency: string; // "EUR"
+  stripeEnabled: boolean;
+  stripeSecretKey: string | null;
+  stripePublishableKey: string | null;
+  paypalEnabled: boolean;
+  paypalClientId: string | null;
+  paypalSecret: string | null;
+  paypalMode: "sandbox" | "live";
+}
+
+export interface PrintConfig {
+  downloadEnabled: boolean; // venta de descarga en alta calidad (tratada)
+  downloadPriceCents: number;
+  printEnabled: boolean; // impresión en sitio
+  printPriceCents: number;
+}
+
 const DEFAULT_BRANDING: Branding = {
   logoKey: null,
   showWordmark: true,
@@ -85,3 +118,39 @@ export const setAiSettings = (v: AiSettings, actorId?: string | null) => setSett
 export const getTerms = () =>
   getSetting<Terms>("legal.terms", { version: TERMS_VERSION, content: DEFAULT_TERMS });
 export const setTerms = (v: Terms, actorId?: string | null) => setSetting("legal.terms", v, actorId);
+
+// ── Plantillas (overlay sponsor para descarga/impresión) ──
+const DEFAULT_TPL: TemplateConfig = {
+  showSponsorLogo: true,
+  logoPosition: "bottom-right",
+  logoScalePct: 22,
+  frameColor: null,
+  framePx: 0,
+};
+export const getTemplates = () =>
+  getSetting<Templates>("templates", { vertical: DEFAULT_TPL, horizontal: DEFAULT_TPL });
+export const setTemplates = (v: Templates, actorId?: string | null) => setSetting("templates", v, actorId);
+
+// ── Pagos ──
+const DEFAULT_PAYMENTS: Payments = {
+  currency: "EUR",
+  stripeEnabled: false,
+  stripeSecretKey: null,
+  stripePublishableKey: null,
+  paypalEnabled: false,
+  paypalClientId: null,
+  paypalSecret: null,
+  paypalMode: "sandbox",
+};
+export const getPayments = () => getSetting<Payments>("payments", DEFAULT_PAYMENTS);
+export const setPayments = (v: Payments, actorId?: string | null) => setSetting("payments", v, actorId);
+
+// ── Precios (tienda) ──
+const DEFAULT_PRINT: PrintConfig = {
+  downloadEnabled: false,
+  downloadPriceCents: 300,
+  printEnabled: false,
+  printPriceCents: 500,
+};
+export const getPrintConfig = () => getSetting<PrintConfig>("print", DEFAULT_PRINT);
+export const setPrintConfig = (v: PrintConfig, actorId?: string | null) => setSetting("print", v, actorId);

@@ -71,6 +71,7 @@ export async function updateEventAction(
     watermarkPosition?: string;
     watermarkOpacity?: number;
     autoApproveOnAiClean?: boolean;
+    sponsors?: string[];
   },
 ) {
   const actor = await requireRole("SUPERADMIN");

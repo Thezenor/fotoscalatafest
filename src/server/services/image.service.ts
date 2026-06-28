@@ -1,4 +1,4 @@
-import sharp from "sharp";
+import sharp, { type OverlayOptions } from "sharp";
 
 /**
  * Procesado de imágenes con sharp: miniatura optimizada y marca de agua
@@ -69,6 +69,104 @@ function watermarkSvg(imgW: number, imgH: number, opacity: number): Buffer {
               font-weight="700" fill="#ffffff" letter-spacing="0.5">${text}</text>
       </g>
     </svg>`);
+}
+
+// ─────────── Foto tratada (descarga premium / impresión en sitio) ───────────
+
+const GRAVITY_POS: Record<string, string> = {
+  "bottom-right": "southeast",
+  "bottom-left": "southwest",
+  "top-right": "northeast",
+  "top-left": "northwest",
+  center: "center",
+};
+
+export interface TreatedOptions {
+  logoPosition?: string;
+  logoScalePct?: number; // % del ancho
+  frameColor?: string | null;
+  framePx?: number;
+  sponsorLogo?: Buffer | null; // PNG/SVG del sponsor (o logo de marca)
+  number?: string | null; // número de impresión a estampar
+  qr?: Buffer | null; // PNG del QR identificador
+}
+
+export type Orientation = "vertical" | "horizontal" | "square";
+
+export function detectOrientation(width?: number, height?: number): Orientation {
+  if (!width || !height) return "horizontal";
+  const r = width / height;
+  if (r > 1.15) return "horizontal";
+  if (r < 0.87) return "vertical";
+  return "square";
+}
+
+/**
+ * Genera la versión "tratada" en alta calidad: opcional marco + logo del sponsor
+ * + (para impresión) número y QR identificador integrados en la esquina.
+ * Detecta la orientación a partir de las dimensiones reales de la foto.
+ */
+export async function makeTreatedPhoto(
+  input: Buffer,
+  opts: TreatedOptions,
+): Promise<{ buffer: Buffer; mime: string; orientation: Orientation }> {
+  let img = sharp(input).rotate();
+  const meta = await img.metadata();
+  const w = meta.width ?? 1600;
+  const h = meta.height ?? 1067;
+  const orientation = detectOrientation(w, h);
+
+  // Marco opcional.
+  if (opts.frameColor && opts.framePx && opts.framePx > 0) {
+    img = sharp(
+      await img
+        .extend({
+          top: opts.framePx,
+          bottom: opts.framePx,
+          left: opts.framePx,
+          right: opts.framePx,
+          background: opts.frameColor,
+        })
+        .toBuffer(),
+    );
+  }
+
+  const base = await img.toBuffer();
+  const bw = (await sharp(base).metadata()).width ?? w;
+  const composites: OverlayOptions[] = [];
+
+  // Logo del sponsor.
+  if (opts.sponsorLogo) {
+    const logoW = Math.round(bw * ((opts.logoScalePct ?? 22) / 100));
+    const logo = await sharp(opts.sponsorLogo).resize({ width: logoW }).png().toBuffer();
+    composites.push({ input: logo, gravity: GRAVITY_POS[opts.logoPosition ?? "bottom-right"] ?? "southeast" });
+  }
+
+  // Número + QR (impresión): bloque blanco abajo-izquierda, dimensionado al contenido.
+  if (opts.number || opts.qr) {
+    const fontSize = Math.round(bw * 0.05);
+    const qrSize = opts.qr ? Math.round(bw * 0.13) : 0;
+    const padding = Math.round(bw * 0.02);
+    const label = opts.number ? `#${opts.number}` : "";
+    const textW = label ? Math.ceil(label.length * fontSize * 0.62) : 0;
+    const qrB64 = opts.qr ? (await sharp(opts.qr).resize({ width: qrSize }).png().toBuffer()).toString("base64") : null;
+    const blockW = padding + (qrSize ? qrSize + padding : 0) + textW + (textW ? padding : 0);
+    const blockH = Math.max(qrSize, fontSize) + padding * 2;
+    const textX = padding + (qrSize ? qrSize + padding : 0);
+    const svg = `
+      <svg width="${blockW}" height="${blockH}" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="${blockW}" height="${blockH}" rx="${padding}" fill="rgba(255,255,255,0.94)"/>
+        ${qrB64 ? `<image x="${padding}" y="${padding}" width="${qrSize}" height="${qrSize}" href="data:image/png;base64,${qrB64}"/>` : ""}
+        ${label ? `<text x="${textX}" y="${blockH / 2 + fontSize / 3}" font-family="DejaVu Sans, Arial, sans-serif" font-size="${fontSize}" font-weight="700" fill="#0E0E0E">${label}</text>` : ""}
+      </svg>`;
+    composites.push({ input: Buffer.from(svg), gravity: "southwest" });
+  }
+
+  const out = await sharp(base)
+    .composite(composites)
+    .jpeg({ quality: 95 })
+    .toBuffer();
+  return { buffer: out, mime: "image/jpeg", orientation };
 }
 
 /**

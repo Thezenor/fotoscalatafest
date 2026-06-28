@@ -59,6 +59,9 @@ model Event {
   // Si false (por defecto): IA limpia queda pendiente de revisión manual.
   autoApproveOnAiClean Boolean @default(false)
 
+  // Patrocinadores de este evento (nombres). Si null, se usan los globales.
+  sponsors Json?
+
   stages    Stage[]
   photos    Photo[]
   consents  Consent[]
@@ -122,6 +125,10 @@ model Photo {
   // QR de descarga INDIVIDUAL (se genera al aprobar)
   downloadQrToken String? @unique
 
+  // Código corto único para impresión en sitio (número + QR sobre la foto)
+  printCode   String?      @unique
+  printOrders PrintOrder[]
+
   // Datos opcionales del autor (se muestran en galería/Live)
   authorName      String?
   authorInstagram String?
@@ -155,6 +162,36 @@ model Setting {
   key       String   @id
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+}
+
+enum PrintOrderStatus {
+  PENDING // creado, esperando pago
+  PAID // pagado
+  FULFILLED // impreso/entregado
+  CANCELLED
+}
+
+// Pedido de compra (impresión en sitio o descarga en alta calidad tratada).
+model PrintOrder {
+  id          String           @id @default(cuid())
+  photoId     String?
+  photo       Photo?           @relation(fields: [photoId], references: [id], onDelete: SetNull)
+  kind        String           @default("print") // "print" | "download"
+  status      PrintOrderStatus @default(PENDING)
+  provider    PaymentProvider?
+  amountCents Int
+  currency    String           @default("EUR")
+  externalId  String? // id de sesión Stripe / orden PayPal
+  buyerEmail  String?
+  createdAt   DateTime         @default(now())
+  paidAt      DateTime?
+
+  @@index([status, createdAt])
 }
 
 enum RemovalStatus {

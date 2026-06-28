@@ -83,6 +83,7 @@ export async function updateEventConfig(
     watermarkPosition?: string;
     watermarkOpacity?: number;
     autoApproveOnAiClean?: boolean;
+    sponsors?: string[];
   },
   actorId?: string | null,
 ) {

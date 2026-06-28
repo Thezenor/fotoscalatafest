@@ -127,6 +127,10 @@
     "iaDesc": "Enable and configure AI keys.",
     "terms": "Terms",
     "termsDesc": "Edit terms and conditions.",
+    "templates": "Templates",
+    "templatesDesc": "Vertical/horizontal templates with sponsor logo.",
+    "payments": "Payments & pricing",
+    "paymentsDesc": "Photo sales: Stripe, PayPal and prices.",
     "soon": "Coming soon",
     "openPanel": "Panel access"
   },

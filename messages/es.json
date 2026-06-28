@@ -127,6 +127,10 @@
     "iaDesc": "Activar y configurar las claves de la IA.",
     "terms": "Términos",
     "termsDesc": "Editar términos y condiciones.",
+    "templates": "Plantillas",
+    "templatesDesc": "Plantillas vertical/horizontal con logo del sponsor.",
+    "payments": "Pagos y precios",
+    "paymentsDesc": "Venta de fotos: Stripe, PayPal y precios.",
     "soon": "Próximamente",
     "openPanel": "Acceso panel"
   },

@@ -8,6 +8,8 @@ import {
   Palette,
   Bot,
   FileText,
+  LayoutTemplate,
+  CreditCard,
   ArrowRight,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -39,6 +41,8 @@ export default async function SuperadminPage({
     { key: "removals", icon: FileWarning, href: "/superadmin/retiradas", ready: true, external: false, badge: openRemovals },
     { key: "branding", icon: Palette, href: "/superadmin/branding", ready: true, external: false, badge: 0 },
     { key: "ia", icon: Bot, href: "/superadmin/ia", ready: true, external: false, badge: 0 },
+    { key: "templates", icon: LayoutTemplate, href: "/superadmin/plantillas", ready: true, external: false, badge: 0 },
+    { key: "payments", icon: CreditCard, href: "/superadmin/pagos", ready: true, external: false, badge: 0 },
     { key: "terms", icon: FileText, href: "/superadmin/terminos", ready: true, external: false, badge: 0 },
     { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true, badge: 0 },
     { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false, badge: 0 },
