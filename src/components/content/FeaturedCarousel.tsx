@@ -34,7 +34,7 @@ export function FeaturedCarousel({
   const photo = slides[i];
 
   return (
-    <div className="relative h-[200px] w-full overflow-hidden rounded-lg">
+    <div className="relative h-[200px] w-full overflow-hidden rounded-lg lg:h-[460px]">
       {slides.map((s, idx) => (
         <Image
           key={s.id}
@@ -58,12 +58,12 @@ export function FeaturedCarousel({
       <button
         type="button"
         onClick={() => router.push(`/foto/${photo.id}`)}
-        className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 p-4 text-left"
+        className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-0.5 p-4 text-left lg:p-7"
       >
-        <span className="font-display text-[20px] font-bold leading-tight text-white">
+        <span className="font-display text-[20px] font-bold leading-tight text-white lg:text-4xl">
           {photo.stageName}
         </span>
-        <span className="font-body text-[13px] text-mist">{caption(photo)}</span>
+        <span className="font-body text-[13px] text-mist lg:text-base">{caption(photo)}</span>
       </button>
 
       <div className="absolute bottom-4 right-4 flex gap-1.5">
