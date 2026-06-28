@@ -31,6 +31,7 @@ export interface Photo {
   status: PhotoStatus;
   featured: boolean;
   onScreen: boolean;
+  aiVerdict?: string; // PENDING | CLEAN | NSFW | VIOLENCE | MINOR_SUSPECTED | ERROR
   createdAt: string;
 }
 

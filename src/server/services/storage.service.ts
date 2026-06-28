@@ -17,6 +17,7 @@ const EXT_BY_MIME: Record<string, string> = {
   "image/webp": "webp",
   "image/avif": "avif",
   "image/gif": "gif",
+  "image/svg+xml": "svg",
 };
 
 export function extFromMime(mime: string): string {
@@ -80,6 +81,16 @@ export async function readAnyObject(
     return await readObject(key);
   } catch {
     return null;
+  }
+}
+
+/** Borra un objeto del storage (ignora claves de assets públicos y errores). */
+export async function deleteObject(key: string | null | undefined): Promise<void> {
+  if (!key || key.startsWith("/")) return; // no borramos assets de /public
+  try {
+    await fs.unlink(safeJoin(key));
+  } catch {
+    /* ya no existe: ok */
   }
 }
 

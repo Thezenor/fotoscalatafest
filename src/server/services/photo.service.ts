@@ -31,6 +31,7 @@ function toDTO(p: DbPhotoWithStage): PhotoDTO {
     status,
     featured: p.featured,
     onScreen: p.onScreen,
+    aiVerdict: p.aiVerdict,
     createdAt: p.createdAt.toISOString(),
   };
 }

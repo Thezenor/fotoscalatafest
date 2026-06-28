@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/server/db";
 import { logAudit } from "@/server/services/audit.service";
+import { deleteObject } from "@/server/services/storage.service";
 import type { Role } from "@prisma/client";
 
 // ─────────── Usuarios y roles ───────────
@@ -116,7 +117,30 @@ export async function countOpenRemovals() {
   return prisma.removalRequest.count({ where: { status: "OPEN" } });
 }
 
-export async function resolveRemoval(id: string, actorId?: string | null) {
+/**
+ * Resuelve una solicitud de retirada. Si `takedown`, retira la foto asociada:
+ * borra los ficheros del storage y la marca como REJECTED (deja de ser pública).
+ */
+export async function resolveRemoval(id: string, actorId?: string | null, takedown = true) {
+  const req = await prisma.removalRequest.findUnique({
+    where: { id },
+    include: { photo: true },
+  });
+
+  if (takedown && req?.photo) {
+    const p = req.photo;
+    await Promise.all([
+      deleteObject(p.originalKey),
+      deleteObject(p.thumbnailKey),
+      deleteObject(p.watermarkedKey),
+    ]);
+    await prisma.photo.update({
+      where: { id: p.id },
+      data: { status: "REJECTED", onScreen: false, featured: false, rejectReason: "Retirada (RGPD)" },
+    });
+    await logAudit({ action: "PHOTO_TAKEN_DOWN", entityType: "Photo", entityId: p.id, userId: actorId ?? null, metadata: { removalId: id } });
+  }
+
   await prisma.removalRequest.update({
     where: { id },
     data: { status: "RESOLVED", resolvedAt: new Date() },

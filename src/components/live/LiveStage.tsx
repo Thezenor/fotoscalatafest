@@ -17,7 +17,7 @@ export interface LiveLabels {
   sponsors: string;
 }
 
-const SPONSORS = ["Heraldo", "Coca-Cola", "Beefeater", "Ibercaja", "Ámbar"];
+const DEFAULT_SPONSORS = ["Heraldo", "Coca-Cola", "Beefeater", "Ibercaja", "Ámbar"];
 
 export function LiveStage({
   photos,
@@ -26,6 +26,7 @@ export function LiveStage({
   labels,
   locale,
   landingUrl,
+  sponsors,
   interval = 3800,
 }: {
   photos: Photo[];
@@ -34,10 +35,30 @@ export function LiveStage({
   labels: LiveLabels;
   locale: string;
   landingUrl: string;
+  sponsors?: string[];
   interval?: number;
 }) {
+  const sponsorList = sponsors && sponsors.length ? sponsors : DEFAULT_SPONSORS;
   const [index, setIndex] = useState(0);
   const [now, setNow] = useState<string>("");
+  const [livePhotos, setLivePhotos] = useState<Photo[]>(photos);
+  const [liveFeatured, setLiveFeatured] = useState<Photo[]>(featured);
+
+  // Refresco en tiempo real: sondea /api/live cada 20s para traer fotos nuevas.
+  useEffect(() => {
+    const id = setInterval(async () => {
+      try {
+        const res = await fetch("/api/live", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data.photos)) setLivePhotos(data.photos);
+        if (Array.isArray(data.featured)) setLiveFeatured(data.featured);
+      } catch {
+        /* reintenta en el siguiente tick */
+      }
+    }, 20000);
+    return () => clearInterval(id);
+  }, []);
 
   // Reloj en vivo (cliente).
   useEffect(() => {
@@ -52,12 +73,12 @@ export function LiveStage({
 
   // Rotación automática.
   useEffect(() => {
-    if (photos.length <= 1) return;
-    const id = setInterval(() => setIndex((p) => (p + 1) % photos.length), interval);
+    if (livePhotos.length <= 1) return;
+    const id = setInterval(() => setIndex((p) => (p + 1) % livePhotos.length), interval);
     return () => clearInterval(id);
-  }, [photos.length, interval]);
+  }, [livePhotos.length, interval]);
 
-  const current = photos[index] ?? photos[0];
+  const current = livePhotos[index] ?? livePhotos[0];
   const dayUpper = (p: Photo) => dayLabel(p.day, locale).toUpperCase();
   const title = (p: Photo) => p.author?.name ?? p.author?.instagram ?? p.stageName;
   const handle = (p: Photo) => p.author?.instagram ?? "@calatafest2026";
@@ -90,7 +111,7 @@ export function LiveStage({
 
         {variant === "mosaico" && (
           <div className="relative grid flex-1 grid-cols-3 grid-rows-3 gap-2.5">
-            {photos.slice(0, 9).map((p, i) => (
+            {livePhotos.slice(0, 9).map((p, i) => (
               <div key={p.id} className={cn("relative overflow-hidden rounded-sm", i === index % 9 && "ring-2 ring-brand")}>
                 <PhotoLayer photo={p} />
               </div>
@@ -121,7 +142,7 @@ export function LiveStage({
                 {labels.featuredNow}
               </p>
               <div className="grid flex-1 grid-cols-3 gap-3">
-                {(featured.length ? featured : photos).slice(0, 3).map((p) => (
+                {(liveFeatured.length ? liveFeatured : livePhotos).slice(0, 3).map((p) => (
                   <div key={p.id} className="relative overflow-hidden rounded-sm">
                     <PhotoLayer photo={p} />
                   </div>
@@ -139,7 +160,7 @@ export function LiveStage({
             {labels.sponsors}
           </span>
           <div className="flex items-center gap-4 opacity-75">
-            {SPONSORS.map((s) => (
+            {sponsorList.map((s) => (
               <span key={s} className="font-body text-[14px] font-semibold">
                 {s}
               </span>

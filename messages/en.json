@@ -121,6 +121,12 @@
     "auditDesc": "Record of every system action.",
     "removals": "Removals",
     "removalsDesc": "Photo removal requests (GDPR).",
+    "branding": "Brand & logos",
+    "brandingDesc": "Official logo and sponsors.",
+    "ia": "AI moderation",
+    "iaDesc": "Enable and configure AI keys.",
+    "terms": "Terms",
+    "termsDesc": "Edit terms and conditions.",
     "soon": "Coming soon",
     "openPanel": "Panel access"
   },

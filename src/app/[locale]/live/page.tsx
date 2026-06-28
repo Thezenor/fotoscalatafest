@@ -5,6 +5,7 @@ import {
   listApprovedPhotos,
   listFeaturedPhotos,
 } from "@/server/services/photo.service";
+import { getBranding } from "@/server/services/settings.service";
 
 // Pantalla del recinto: 16:9, sin chrome de navegación.
 export const dynamic = "force-dynamic";
@@ -29,14 +30,15 @@ export default async function LivePage({
   const v = (VARIANTS.includes(variant as LiveVariant) ? variant : "destacadas") as LiveVariant;
 
   // Refresco real-time pendiente (polling/SSE). De momento lee de la DB en cada carga.
-  const [onScreen, approved, featured] = await Promise.all([
+  const [onScreen, approved, featured, branding] = await Promise.all([
     listOnScreenPhotos(),
     listApprovedPhotos(),
     listFeaturedPhotos(),
+    getBranding(),
   ]);
   const pool = onScreen.length ? onScreen : approved;
 
-  const landingUrl = "https://fotoscalatafest.com";
+  const landingUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://fotoscalatafest.com";
 
   return (
     <LiveStage
@@ -45,6 +47,7 @@ export default async function LivePage({
       variant={v}
       locale={locale}
       landingUrl={landingUrl}
+      sponsors={branding.sponsors}
       labels={{
         liveNow: t("liveNow"),
         scanTitle: t("scanTitle"),

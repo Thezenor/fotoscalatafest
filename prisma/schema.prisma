@@ -151,6 +151,12 @@ model Photo {
   @@index([status, onScreen])
 }
 
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
 enum RemovalStatus {
   OPEN
   RESOLVED

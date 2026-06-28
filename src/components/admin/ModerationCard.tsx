@@ -3,7 +3,10 @@
 import Image from "next/image";
 import { StatusBadge } from "./StatusBadge";
 import { ActionBar, type ActionLabels } from "./ActionBar";
+import { Badge } from "@/components/ui/Badge";
 import { dayLabel, type Photo } from "@/lib/mock-data";
+
+const AI_FLAG = new Set(["NSFW", "VIOLENCE", "MINOR_SUSPECTED", "ERROR"]);
 
 export interface ModerationLabels extends ActionLabels {
   pending: string;
@@ -34,8 +37,11 @@ export function ModerationCard({
     <div className="overflow-hidden rounded-[16px] border border-line bg-surface">
       <div className="relative h-[150px]">
         <Image src={photo.url} alt={photo.stageName} fill sizes="320px" className="object-cover" />
-        <div className="absolute left-2 top-2">
+        <div className="absolute left-2 top-2 flex gap-1.5">
           <StatusBadge status={photo.status} featured={photo.featured} labels={labels} />
+          {photo.aiVerdict && AI_FLAG.has(photo.aiVerdict) && (
+            <Badge tone="danger">IA: {photo.aiVerdict}</Badge>
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-3 p-4">

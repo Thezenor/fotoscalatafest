@@ -12,6 +12,7 @@ import { LangSwitcher } from "@/components/content/LangSwitcher";
 import { SiteNav } from "@/components/content/SiteNav";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { listStages, getActiveEvent } from "@/server/services/photo.service";
+import { getBranding } from "@/server/services/settings.service";
 import { siteUrl, absoluteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,11 @@ export default async function LandingPage({
   const t = await getTranslations("landing");
   const tc = await getTranslations("common");
   const ts = await getTranslations("superadmin");
-  const [stages, event] = await Promise.all([listStages(), getActiveEvent()]);
+  const [stages, event, branding] = await Promise.all([
+    listStages(),
+    getActiveEvent(),
+    getBranding(),
+  ]);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -119,7 +124,7 @@ export default async function LandingPage({
 
       {/* PATROCINADORES + acceso al panel */}
       <section className="flex flex-col items-center gap-6 border-t border-surface-2 px-[22px] py-8 lg:py-12">
-        <SponsorStrip title={t("sponsors")} />
+        <SponsorStrip title={t("sponsors")} sponsors={branding.sponsors} />
         <Link
           href="/superadmin"
           className="inline-flex items-center gap-2 rounded-pill border border-line px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-wide text-mist transition hover:border-brand hover:text-brand"

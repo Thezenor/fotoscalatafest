@@ -5,6 +5,9 @@ import {
   Download,
   ScrollText,
   FileWarning,
+  Palette,
+  Bot,
+  FileText,
   ArrowRight,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -34,6 +37,9 @@ export default async function SuperadminPage({
     { key: "events", icon: CalendarDays, href: "/superadmin/eventos", ready: true, external: false, badge: 0 },
     { key: "users", icon: Users, href: "/superadmin/usuarios", ready: true, external: false, badge: 0 },
     { key: "removals", icon: FileWarning, href: "/superadmin/retiradas", ready: true, external: false, badge: openRemovals },
+    { key: "branding", icon: Palette, href: "/superadmin/branding", ready: true, external: false, badge: 0 },
+    { key: "ia", icon: Bot, href: "/superadmin/ia", ready: true, external: false, badge: 0 },
+    { key: "terms", icon: FileText, href: "/superadmin/terminos", ready: true, external: false, badge: 0 },
     { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true, badge: 0 },
     { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false, badge: 0 },
   ] as const;

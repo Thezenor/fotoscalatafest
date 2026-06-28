@@ -121,6 +121,12 @@
     "auditDesc": "Registre de totes les accions del sistema.",
     "removals": "Retirades",
     "removalsDesc": "Sol·licituds de retirada de fotos (RGPD).",
+    "branding": "Marca i logos",
+    "brandingDesc": "Logo oficial i patrocinadors.",
+    "ia": "Moderació IA",
+    "iaDesc": "Activar i configurar les claus de la IA.",
+    "terms": "Termes",
+    "termsDesc": "Editar termes i condicions.",
     "soon": "Properament",
     "openPanel": "Accés panell"
   },
