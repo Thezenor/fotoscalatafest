@@ -7,12 +7,11 @@ import { buttonClass } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Marquee } from "@/components/content/Marquee";
 import { StageCard } from "@/components/content/StageCard";
-import { SponsorStrip } from "@/components/content/SponsorStrip";
+import { SiteFooter } from "@/components/content/SiteFooter";
 import { LangSwitcher } from "@/components/content/LangSwitcher";
 import { SiteNav } from "@/components/content/SiteNav";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { listStages, getActiveEvent } from "@/server/services/photo.service";
-import { getBranding } from "@/server/services/settings.service";
 import { siteUrl, absoluteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -27,11 +26,7 @@ export default async function LandingPage({
   const t = await getTranslations("landing");
   const tc = await getTranslations("common");
   const ts = await getTranslations("superadmin");
-  const [stages, event, branding] = await Promise.all([
-    listStages(),
-    getActiveEvent(),
-    getBranding(),
-  ]);
+  const [stages, event] = await Promise.all([listStages(), getActiveEvent()]);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -137,10 +132,7 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* PATROCINADORES */}
-      <section className="flex flex-col items-center gap-6 border-t border-surface-2 px-[22px] py-8 lg:py-12">
-        <SponsorStrip title={t("sponsors")} sponsors={branding.sponsors} />
-      </section>
+      <SiteFooter />
     </main>
   );
 }

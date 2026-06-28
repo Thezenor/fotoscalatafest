@@ -23,6 +23,21 @@
     "seeAll": "Veure'ls tots",
     "sponsors": "Amb el suport de"
   },
+  "footer": {
+    "tagline": "Puja les teves fotos del festival i reviu-lo a lo gran. Les millors es projecten a les pantalles del recinte.",
+    "links": "Explora",
+    "gallery": "Galeria",
+    "stages": "Escenaris",
+    "upload": "Pujar foto",
+    "legal": "Legal",
+    "terms": "Termes i condicions",
+    "privacy": "Política de privacitat",
+    "removalNote": "Surts en una foto? Sol·licita'n la retirada des de la mateixa foto.",
+    "collaborators": "Col·laboradors",
+    "organizer": "Organitza",
+    "rights": "Tots els drets reservats.",
+    "developedBy": "Desenvolupat per"
+  },
   "selector": {
     "title": "Tria escenari",
     "subtitle": "On ets ara mateix?",

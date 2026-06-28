@@ -10,6 +10,7 @@ import { QRBlock } from "@/components/content/QRBlock";
 import { ShareButton } from "@/components/content/ShareButton";
 import { RemovalLink } from "@/components/content/RemovalLink";
 import { SiteNav } from "@/components/content/SiteNav";
+import { SiteFooter } from "@/components/content/SiteFooter";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { dayLabel } from "@/lib/mock-data";
 import { getPublicPhoto } from "@/server/services/photo.service";
@@ -172,6 +173,8 @@ export default async function PhotoPage({
           </div>
         </div>
       </div>
+
+      <SiteFooter />
     </main>
   );
 }

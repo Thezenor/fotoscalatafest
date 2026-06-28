@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/content/PageHeader";
 import { StageCard } from "@/components/content/StageCard";
 import { SiteNav } from "@/components/content/SiteNav";
+import { SiteFooter } from "@/components/content/SiteFooter";
 import { listStages } from "@/server/services/photo.service";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +48,7 @@ export default async function StagesPage({
           ))}
         </div>
       </div>
+      <SiteFooter />
     </main>
   );
 }

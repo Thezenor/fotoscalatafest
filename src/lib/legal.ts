@@ -38,3 +38,36 @@ El diseño, código y elementos de la plataforma pertenecen a AYUDFEST S.L. Las 
 ## 9. Legislación aplicable
 Estas condiciones se rigen por la legislación española. Para cualquier controversia, las partes se someten a los juzgados del domicilio del usuario o, si está fuera de España, a los de Zaragoza.
 `;
+
+/**
+ * Política de privacidad por defecto (RGPD). Editable / revisable con asesoría legal.
+ * ⚠️ Revisar con la asesoría legal del festival antes de producción.
+ */
+export const DEFAULT_PRIVACY = `# Política de privacidad
+
+## Responsable del tratamiento
+**AYUDFEST S.L.**, NIF B72994817, con domicilio en Paseo Cortes de Aragón 10 Local, 50300 Calatayud (Zaragoza). Plataforma: **fotoscalatafest.com**.
+
+## ¿Qué datos tratamos?
+- **Fotografías** que el usuario sube voluntariamente.
+- **Datos opcionales** asociados a la foto: nombre o alias y redes sociales (Instagram/TikTok), si el usuario decide aportarlos.
+- **Datos técnicos** mínimos para seguridad y prevención de abuso (dirección IP y un identificador anónimo del dispositivo en el momento de la subida).
+
+## Finalidad
+Gestión, moderación y difusión de las fotografías del festival en las galerías públicas, las pantallas del recinto y los canales oficiales, así como la prevención de usos fraudulentos de la plataforma.
+
+## Base legal
+El **consentimiento** del usuario, otorgado al aceptar las condiciones antes de subir cada fotografía. El usuario puede retirar su consentimiento en cualquier momento solicitando la retirada de la foto.
+
+## Conservación
+Los datos se conservan mientras la fotografía permanezca publicada y durante los plazos legales aplicables. Las fotografías retiradas o rechazadas se eliminan del almacenamiento activo.
+
+## Destinatarios
+No se ceden datos a terceros salvo obligación legal. La plataforma se aloja en proveedores de infraestructura que actúan como encargados del tratamiento bajo contrato.
+
+## Derechos
+El usuario puede ejercer sus derechos de **acceso, rectificación, supresión, oposición, limitación y portabilidad**, así como retirar su consentimiento, escribiendo al responsable. También puede solicitar la retirada de cualquier foto desde el enlace "Solicitar retirada" disponible en cada fotografía, y reclamar ante la Agencia Española de Protección de Datos (www.aepd.es).
+
+## Menores
+La plataforma **no admite imágenes de menores** ni la participación de menores de edad sin autorización. Cualquier contenido que lo incumpla será retirado.
+`;

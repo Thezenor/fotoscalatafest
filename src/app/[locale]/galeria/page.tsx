@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Logo } from "@/components/ui/Logo";
 import { IconButton } from "@/components/ui/IconButton";
 import { SiteNav } from "@/components/content/SiteNav";
+import { SiteFooter } from "@/components/content/SiteFooter";
 import { GalleryView } from "./gallery-view";
 import { listApprovedPhotos, listFeaturedPhotos, listStages } from "@/server/services/photo.service";
 import { localizedAlternates } from "@/lib/seo";
@@ -76,6 +77,8 @@ export default async function GalleryPage({
         featuredLabel={t("featured")}
         emptyLabel={t("empty")}
       />
+
+      <SiteFooter />
     </main>
   );
 }

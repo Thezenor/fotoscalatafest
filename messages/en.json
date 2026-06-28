@@ -23,6 +23,21 @@
     "seeAll": "See all",
     "sponsors": "With the support of"
   },
+  "footer": {
+    "tagline": "Upload your festival photos and relive the night. The best ones are shown on the venue screens.",
+    "links": "Explore",
+    "gallery": "Gallery",
+    "stages": "Stages",
+    "upload": "Upload photo",
+    "legal": "Legal",
+    "terms": "Terms & conditions",
+    "privacy": "Privacy policy",
+    "removalNote": "Are you in a photo? Request its removal from the photo itself.",
+    "collaborators": "Collaborators",
+    "organizer": "Organized by",
+    "rights": "All rights reserved.",
+    "developedBy": "Developed by"
+  },
   "selector": {
     "title": "Choose stage",
     "subtitle": "Where are you right now?",

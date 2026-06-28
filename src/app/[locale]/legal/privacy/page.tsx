@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LegalDoc } from "@/components/content/LegalDoc";
-import { getTerms } from "@/server/services/settings.service";
+import { DEFAULT_PRIVACY } from "@/lib/legal";
 
 export const dynamic = "force-dynamic";
 
@@ -12,10 +12,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "legal" });
-  return { title: t("termsTitle") };
+  return { title: t("privacyTitle") };
 }
 
-export default async function TermsPage({
+export default async function PrivacyPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -23,6 +23,5 @@ export default async function TermsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("legal");
-  const terms = await getTerms();
-  return <LegalDoc eyebrow={`${t("termsTitle")} · v${terms.version}`} content={terms.content} />;
+  return <LegalDoc eyebrow={t("privacyTitle")} content={DEFAULT_PRIVACY} />;
 }

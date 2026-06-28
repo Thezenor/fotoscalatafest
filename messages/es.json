@@ -23,6 +23,21 @@
     "seeAll": "Ver todos",
     "sponsors": "Con el apoyo de"
   },
+  "footer": {
+    "tagline": "Sube tus fotos del festival y revívelo en grande. Las mejores se proyectan en las pantallas del recinto.",
+    "links": "Explora",
+    "gallery": "Galería",
+    "stages": "Escenarios",
+    "upload": "Subir foto",
+    "legal": "Legal",
+    "terms": "Términos y condiciones",
+    "privacy": "Política de privacidad",
+    "removalNote": "¿Apareces en una foto? Solicita su retirada desde la propia foto.",
+    "collaborators": "Colaboradores",
+    "organizer": "Organiza",
+    "rights": "Todos los derechos reservados.",
+    "developedBy": "Desarrollado por"
+  },
   "selector": {
     "title": "Elige escenario",
     "subtitle": "¿Dónde estás ahora mismo?",
