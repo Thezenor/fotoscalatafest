@@ -1,5 +1,6 @@
-import { Search, MonitorPlay } from "lucide-react";
+import { Search, MonitorPlay, ArrowLeft } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { signOut } from "@/auth";
 import { requireUser } from "@/server/auth/guards";
 import { Sidebar } from "@/components/admin/Sidebar";
@@ -64,6 +65,7 @@ export default async function AdminPage({
       <Sidebar
         active="moderation"
         pendingCount={pendingCount}
+        superadmin={user.role === "SUPERADMIN"}
         user={user.name ?? user.email ?? "Moderador"}
         labels={{
           dashboard: t("nav.dashboard"),
@@ -104,9 +106,18 @@ export default async function AdminPage({
 
         {/* Header móvil */}
         <header className="mb-4 flex items-center justify-between lg:hidden">
-          <h1 className="font-display text-[22px] font-bold uppercase text-white">
-            {t("nav.moderation")}
-          </h1>
+          <div className="flex items-center gap-2">
+            <Link
+              href={user.role === "SUPERADMIN" ? "/superadmin" : "/"}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-white"
+              aria-label="volver"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <h1 className="font-display text-[22px] font-bold uppercase text-white">
+              {t("nav.moderation")}
+            </h1>
+          </div>
           <Badge tone="brand">
             {pendingCount} {t("inQueue")}
           </Badge>

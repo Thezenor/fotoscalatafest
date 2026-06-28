@@ -42,7 +42,9 @@ export default async function SuperadminPage({
     <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-8 lg:px-8 lg:py-12">
       <header className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Logo size={30} wordSize={18} />
+          <Link href="/" aria-label="Inicio">
+            <Logo size={30} wordSize={18} />
+          </Link>
           <Badge tone="brand">SUPERADMIN</Badge>
         </div>
         <form
