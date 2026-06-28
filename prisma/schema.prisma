@@ -75,6 +75,8 @@ model Stage {
   event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   name      String
   slug      String
+  sub       String? // eyebrow del banner, p.ej. "HEADLINERS"
+  dayLabel  String? // badge de día, p.ej. "VIE · SÁB"
   bannerUrl String?
   order     Int     @default(0)
   photos    Photo[]
@@ -113,8 +115,22 @@ model Photo {
   moderatedAt   DateTime?
   rejectReason  String?
 
+  // Estado de exhibición (admin)
+  featured Boolean @default(false) // ★ destacada
+  onScreen Boolean @default(false) // enviada a la pantalla Live
+
   // QR de descarga INDIVIDUAL (se genera al aprobar)
   downloadQrToken String? @unique
+
+  // Datos opcionales del autor (se muestran en galería/Live)
+  authorName      String?
+  authorInstagram String?
+  authorTiktok    String?
+  comment         String?
+
+  // Etiquetas de exhibición (día/hora del festival)
+  day       String? // "VIE" | "SÁB"
+  timeLabel String? // "23:10"
 
   // Consentimiento legal asociado
   consentId String?
@@ -129,6 +145,8 @@ model Photo {
 
   @@index([eventId, status])
   @@index([status, createdAt])
+  @@index([status, featured])
+  @@index([status, onScreen])
 }
 
 model Consent {

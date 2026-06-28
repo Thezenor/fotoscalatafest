@@ -8,7 +8,10 @@ import { WatermarkLogo } from "@/components/content/WatermarkLogo";
 import { QRBlock } from "@/components/content/QRBlock";
 import { ShareButton } from "@/components/content/ShareButton";
 import { RemovalLink } from "@/components/content/RemovalLink";
-import { getPhoto, dayLabel } from "@/lib/mock-data";
+import { dayLabel } from "@/lib/mock-data";
+import { getPublicPhoto } from "@/server/services/photo.service";
+
+export const dynamic = "force-dynamic";
 
 export default async function PhotoPage({
   params,
@@ -20,7 +23,7 @@ export default async function PhotoPage({
   const t = await getTranslations("photo");
   const tc = await getTranslations("common");
 
-  const photo = getPhoto(id);
+  const photo = await getPublicPhoto(id);
   if (!photo) notFound();
 
   const chip =

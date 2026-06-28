@@ -31,30 +31,47 @@ export function UploadForm({
   const [rights, setRights] = useState(false);
   const [age, setAge] = useState(false);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
+  const [fields, setFields] = useState({ name: "", instagram: "", tiktok: "", comment: "" });
 
-  const canSubmit = rights && age && !sending; // foto opcional en demo
+  const canSubmit = rights && age && !!file && !sending;
 
   async function submit() {
+    if (!file) return;
     setSending(true);
-    // TODO(backend): construir FormData con `file` + campos y hacer
-    // POST /api/photos (multipart). La foto entra con status "pending".
-    // Aquí simulamos el envío y vamos a la confirmación.
-    void file;
-    void stageId;
-    await new Promise((r) => setTimeout(r, 600));
-    router.push("/enviada");
+    setError(false);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("stage", stageId);
+      fd.append("acceptRights", String(rights));
+      fd.append("acceptAge", String(age));
+      fd.append("name", fields.name);
+      fd.append("instagram", fields.instagram);
+      fd.append("tiktok", fields.tiktok);
+      fd.append("comment", fields.comment);
+      const res = await fetch("/api/photos", { method: "POST", body: fd });
+      if (!res.ok) throw new Error("upload_failed");
+      router.push("/enviada");
+    } catch {
+      setError(true);
+      setSending(false);
+    }
   }
+
+  const set = (k: keyof typeof fields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setFields((f) => ({ ...f, [k]: e.target.value }));
 
   return (
     <div className="flex flex-col gap-4 px-5 pb-32">
       <Uploader labels={labels} onSelect={setFile} />
 
-      <Input name="name" placeholder={labels.name} />
+      <Input name="name" placeholder={labels.name} value={fields.name} onChange={set("name")} />
       <div className="grid grid-cols-2 gap-3">
-        <Input name="instagram" placeholder={labels.instagram} />
-        <Input name="tiktok" placeholder={labels.tiktok} />
+        <Input name="instagram" placeholder={labels.instagram} value={fields.instagram} onChange={set("instagram")} />
+        <Input name="tiktok" placeholder={labels.tiktok} value={fields.tiktok} onChange={set("tiktok")} />
       </div>
-      <Textarea name="comment" placeholder={labels.comment} />
+      <Textarea name="comment" placeholder={labels.comment} value={fields.comment} onChange={set("comment")} />
 
       <div className="flex flex-col gap-1 pt-1">
         <LegalCheckbox checked={rights} onChange={setRights}>
@@ -65,7 +82,12 @@ export function UploadForm({
         </LegalCheckbox>
       </div>
 
-      {/* CTA sticky */}
+      {error && (
+        <p className="text-center font-body text-[13px] text-danger">
+          No se pudo subir, inténtalo de nuevo.
+        </p>
+      )}
+
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[480px] bg-gradient-to-t from-ink via-ink/95 to-transparent px-5 pb-5 pt-8">
         <button
           type="button"

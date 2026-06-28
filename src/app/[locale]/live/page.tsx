@@ -1,6 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LiveStage, type LiveVariant } from "@/components/live/LiveStage";
-import { getOnScreenPhotos, getApprovedPhotos, getFeaturedPhotos } from "@/lib/mock-data";
+import {
+  listOnScreenPhotos,
+  listApprovedPhotos,
+  listFeaturedPhotos,
+} from "@/server/services/photo.service";
 
 // Pantalla del recinto: 16:9, sin chrome de navegación.
 export const dynamic = "force-dynamic";
@@ -21,10 +25,13 @@ export default async function LivePage({
 
   const v = (VARIANTS.includes(variant as LiveVariant) ? variant : "destacadas") as LiveVariant;
 
-  // TODO(backend): GET /api/live (aprobadas + onScreen) con polling/SSE para refresco real.
-  const onScreen = getOnScreenPhotos();
-  const pool = onScreen.length ? onScreen : getApprovedPhotos();
-  const featured = getFeaturedPhotos();
+  // Refresco real-time pendiente (polling/SSE). De momento lee de la DB en cada carga.
+  const [onScreen, approved, featured] = await Promise.all([
+    listOnScreenPhotos(),
+    listApprovedPhotos(),
+    listFeaturedPhotos(),
+  ]);
+  const pool = onScreen.length ? onScreen : approved;
 
   const landingUrl = "https://fotoscalatafest.com";
 

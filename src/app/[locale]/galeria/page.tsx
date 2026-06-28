@@ -3,7 +3,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Logo } from "@/components/ui/Logo";
 import { IconButton } from "@/components/ui/IconButton";
 import { GalleryView } from "./gallery-view";
-import { getApprovedPhotos, getFeaturedPhotos, getStages } from "@/lib/mock-data";
+import { listApprovedPhotos, listFeaturedPhotos, listStages } from "@/server/services/photo.service";
+
+// Lee de la DB (Prisma) → render dinámico.
+export const dynamic = "force-dynamic";
 
 export default async function GalleryPage({
   params,
@@ -14,14 +17,15 @@ export default async function GalleryPage({
   setRequestLocale(locale);
   const t = await getTranslations("gallery");
 
-  // TODO(backend): GET /api/photos?status=approved (con ISR/revalidate corto).
-  const photos = getApprovedPhotos();
-  const featured = getFeaturedPhotos();
-  const stages = getStages();
+  const [photos, featured, stages] = await Promise.all([
+    listApprovedPhotos(),
+    listFeaturedPhotos(),
+    listStages(),
+  ]);
 
   const options = [
     { value: "all", label: t("filters.all") },
-    ...stages.map((s) => ({ value: s.id, label: s.name.replace("Escenario ", "").replace("Carpa ", "") })),
+    ...stages.map((s) => ({ value: s.slug, label: s.name.replace("Escenario ", "").replace("Carpa ", "") })),
     { value: "VIE", label: t("filters.friday") },
     { value: "SÁB", label: t("filters.saturday") },
   ];

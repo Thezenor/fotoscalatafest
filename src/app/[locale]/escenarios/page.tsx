@@ -1,7 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/content/PageHeader";
 import { StageCard } from "@/components/content/StageCard";
-import { getStages } from "@/lib/mock-data";
+import { listStages } from "@/server/services/photo.service";
+
+export const dynamic = "force-dynamic";
 
 export default async function StagesPage({
   params,
@@ -11,7 +13,7 @@ export default async function StagesPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("selector");
-  const stages = getStages();
+  const stages = await listStages();
 
   return (
     <main className="mx-auto w-full max-w-[480px] flex-1 pb-8">
@@ -20,11 +22,11 @@ export default async function StagesPage({
         {stages.map((s) => (
           <StageCard
             key={s.id}
-            image={s.image}
+            image={s.bannerUrl ?? "/demo/p01.png"}
             name={s.name}
-            sub={s.sub}
-            day={s.day}
-            href={`/subir/${s.id}`}
+            sub={s.sub ?? ""}
+            day={s.dayLabel ?? ""}
+            href={`/subir/${s.slug}`}
             cta={t("cta")}
           />
         ))}

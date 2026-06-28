@@ -6,6 +6,7 @@ import { Check, X, Star, MonitorPlay, RotateCcw } from "lucide-react";
 import { ModerationCard, type ModerationLabels } from "./ModerationCard";
 import { FilterChips, type ChipOption } from "@/components/content/FilterChips";
 import { dayLabel, type Photo } from "@/lib/mock-data";
+import { moderateAction, revertModerationAction } from "@/server/actions/moderation";
 import { cn } from "@/lib/utils";
 
 type ActionKind = "approve" | "reject" | "feature" | "screen";
@@ -47,7 +48,7 @@ export function AdminModeration({
   });
 
   function act(photo: Photo, kind: ActionKind) {
-    // Optimista: la tarjeta sale de la cola; TODO(backend) PATCH /api/admin/photos/:id
+    // Optimista: la tarjeta sale de la cola y se persiste en la DB.
     setQueue((q) => q.filter((p) => p.id !== photo.id));
     const msg =
       kind === "approve"
@@ -60,12 +61,20 @@ export function AdminModeration({
     setToast({ msg, photo });
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 5000);
+
+    // Persistencia real + rollback si falla.
+    moderateAction(photo.id, kind).catch(() => {
+      setQueue((q) => [photo, ...q]);
+      setToast(null);
+    });
   }
 
   function undo() {
     if (!toast) return;
-    setQueue((q) => [toast.photo, ...q]);
+    const photo = toast.photo;
+    setQueue((q) => [photo, ...q]);
     setToast(null);
+    void revertModerationAction(photo.id);
   }
 
   const pending = queue.filter((p) => p.status === "pending").length;

@@ -9,7 +9,9 @@ import { Marquee } from "@/components/content/Marquee";
 import { StageCard } from "@/components/content/StageCard";
 import { SponsorStrip } from "@/components/content/SponsorStrip";
 import { LangSwitcher } from "@/components/content/LangSwitcher";
-import { getStages } from "@/lib/mock-data";
+import { listStages } from "@/server/services/photo.service";
+
+export const dynamic = "force-dynamic";
 
 export default async function LandingPage({
   params,
@@ -20,7 +22,7 @@ export default async function LandingPage({
   setRequestLocale(locale);
   const t = await getTranslations("landing");
   const tc = await getTranslations("common");
-  const stages = getStages().slice(0, 2);
+  const stages = (await listStages()).slice(0, 2);
 
   return (
     <main className="mx-auto w-full max-w-[480px] flex-1">
@@ -81,11 +83,11 @@ export default async function LandingPage({
             <StageCard
               key={s.id}
               size="sm"
-              image={s.image}
+              image={s.bannerUrl ?? "/demo/p01.png"}
               name={s.name}
-              sub={`${s.sub} · ${s.day}`}
-              day={s.day}
-              href={`/subir/${s.id}`}
+              sub={`${s.sub ?? ""} · ${s.dayLabel ?? ""}`}
+              day={s.dayLabel ?? ""}
+              href={`/subir/${s.slug}`}
             />
           ))}
         </div>

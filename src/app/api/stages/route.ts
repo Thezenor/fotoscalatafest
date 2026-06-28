@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { getStages } from "@/lib/mock-data";
+import { listStages } from "@/server/services/photo.service";
 
-// GET /api/stages → escenarios del evento.
-// TODO(backend): leer de Prisma (Stage) en lugar del mock.
+// GET /api/stages → escenarios del evento activo (Prisma).
 export async function GET() {
-  return NextResponse.json({ stages: getStages() });
+  return NextResponse.json({ stages: await listStages() });
 }

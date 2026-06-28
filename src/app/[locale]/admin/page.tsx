@@ -7,7 +7,7 @@ import { StatCard } from "@/components/admin/StatCard";
 import { AdminModeration } from "@/components/admin/AdminModeration";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClass } from "@/components/ui/Button";
-import { PHOTOS, getPendingPhotos } from "@/lib/mock-data";
+import { listForModeration } from "@/server/services/photo.service";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,8 @@ export default async function AdminPage({
   const t = await getTranslations("admin");
   const tg = await getTranslations("gallery");
 
-  const pendingCount = getPendingPhotos().length;
+  const board = await listForModeration();
+  const pendingCount = board.filter((p) => p.status === "pending").length;
 
   const filters = [
     { value: "pending", label: t("pending") },
@@ -114,7 +115,7 @@ export default async function AdminPage({
           <StatCard label={t("onScreen")} value="8" />
         </div>
 
-        <AdminModeration initial={PHOTOS} locale={locale} filters={filters} labels={labels} />
+        <AdminModeration initial={board} locale={locale} filters={filters} labels={labels} />
       </main>
     </div>
   );

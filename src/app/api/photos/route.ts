@@ -1,30 +1,84 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getApprovedPhotos } from "@/lib/mock-data";
+import sharp from "sharp";
+import { listApprovedPhotos, createUploadedPhoto, getActiveEvent } from "@/server/services/photo.service";
+import { createConsent } from "@/server/services/consent.service";
+import { saveObject } from "@/server/services/storage.service";
 
-// GET /api/photos?status=approved&stage=&day= → galería pública.
-// TODO(backend): query Prisma (Photo where status=APPROVED ...) + cache/ISR.
+export const runtime = "nodejs";
+
+const MAX_BYTES = 12 * 1024 * 1024; // 12 MB
+const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+
+// GET /api/photos?stage=&day= → galería pública (solo APPROVED).
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const stage = searchParams.get("stage");
-  const day = searchParams.get("day");
-
-  let photos = getApprovedPhotos();
-  if (stage) photos = photos.filter((p) => p.stageId === stage);
-  if (day) photos = photos.filter((p) => p.day === day);
-
+  const photos = await listApprovedPhotos({
+    stageSlug: searchParams.get("stage") ?? undefined,
+    day: searchParams.get("day") ?? undefined,
+  });
   return NextResponse.json({ photos });
 }
 
-// POST /api/photos (multipart) → subida; la foto entra como "pending".
-// TODO(backend): validar archivo (MIME/tamaño), re-encode con sharp (quita EXIF),
-// subir al storage (StorageService), crear Photo PENDING + encolar moderación IA.
-export async function POST() {
-  return NextResponse.json(
-    {
-      ok: true,
-      status: "pending",
-      message: "Foto recibida (stub). Integrar storage + moderación real.",
+// POST /api/photos (multipart) → subida real. La foto entra como PENDING.
+export async function POST(req: NextRequest) {
+  const event = await getActiveEvent();
+  if (!event) return NextResponse.json({ error: "no_active_event" }, { status: 400 });
+
+  const form = await req.formData();
+  const file = form.get("file");
+  const stageSlug = String(form.get("stage") ?? "");
+  const acceptRights = form.get("acceptRights") === "true";
+  const acceptAge = form.get("acceptAge") === "true";
+
+  // Consentimiento obligatorio (validado en backend, no solo en el front).
+  if (!acceptRights || !acceptAge) {
+    return NextResponse.json({ error: "consent_required" }, { status: 400 });
+  }
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "file_required" }, { status: 400 });
+  }
+  if (!ALLOWED.includes(file.type)) {
+    return NextResponse.json({ error: "invalid_type" }, { status: 415 });
+  }
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ error: "too_large" }, { status: 413 });
+  }
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+
+  // Re-encode con sharp: corrige orientación y ELIMINA EXIF/metadatos.
+  const input = Buffer.from(await file.arrayBuffer());
+  const img = sharp(input).rotate();
+  const meta = await img.metadata();
+  const clean = await img.toBuffer();
+  const originalKey = await saveObject(clean, file.type);
+
+  // Registro de consentimiento legal.
+  const consent = await createConsent({
+    eventId: event.id,
+    acceptedRights: acceptRights,
+    confirmedAdult: acceptAge,
+    ip,
+    userAgent: req.headers.get("user-agent"),
+  });
+
+  const photo = await createUploadedPhoto({
+    stageSlug,
+    originalKey,
+    mimeType: file.type,
+    width: meta.width,
+    height: meta.height,
+    sizeBytes: clean.length,
+    author: {
+      name: String(form.get("name") ?? "") || undefined,
+      instagram: String(form.get("instagram") ?? "") || undefined,
+      tiktok: String(form.get("tiktok") ?? "") || undefined,
     },
-    { status: 201 },
-  );
+    comment: String(form.get("comment") ?? "") || undefined,
+    consentId: consent.id,
+    ip,
+  });
+
+  // TODO(Fase 4/6): encolar generación de thumbnail + marca de agua + moderación IA.
+  return NextResponse.json({ ok: true, id: photo.id, status: "pending" }, { status: 201 });
 }
