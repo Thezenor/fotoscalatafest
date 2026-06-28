@@ -10,13 +10,14 @@ import {
   FileText,
   LayoutTemplate,
   CreditCard,
+  Printer,
   ArrowRight,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { signOut } from "@/auth";
 import { requireRole } from "@/server/auth/guards";
-import { countOpenRemovals } from "@/server/services/admin.service";
+import { countOpenRemovals, countPrintQueue } from "@/server/services/admin.service";
 import { Logo } from "@/components/ui/Logo";
 import { Badge } from "@/components/ui/Badge";
 
@@ -32,7 +33,7 @@ export default async function SuperadminPage({
   const user = await requireRole("SUPERADMIN");
   const t = await getTranslations("superadmin");
   const tAuth = await getTranslations("auth");
-  const openRemovals = await countOpenRemovals();
+  const [openRemovals, printQueue] = await Promise.all([countOpenRemovals(), countPrintQueue()]);
 
   const cards = [
     { key: "moderation", icon: ImageIcon, href: "/admin", ready: true, external: false, badge: 0 },
@@ -43,6 +44,7 @@ export default async function SuperadminPage({
     { key: "ia", icon: Bot, href: "/superadmin/ia", ready: true, external: false, badge: 0 },
     { key: "templates", icon: LayoutTemplate, href: "/superadmin/plantillas", ready: true, external: false, badge: 0 },
     { key: "payments", icon: CreditCard, href: "/superadmin/pagos", ready: true, external: false, badge: 0 },
+    { key: "printing", icon: Printer, href: "/admin/impresion", ready: true, external: false, badge: printQueue },
     { key: "terms", icon: FileText, href: "/superadmin/terminos", ready: true, external: false, badge: 0 },
     { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true, badge: 0 },
     { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false, badge: 0 },

@@ -131,6 +131,8 @@
     "templatesDesc": "Vertical/horizontal templates with sponsor logo.",
     "payments": "Payments & pricing",
     "paymentsDesc": "Photo sales: Stripe, PayPal and prices.",
+    "printing": "On-site printing",
+    "printingDesc": "Queue of paid copies to print.",
     "soon": "Coming soon",
     "openPanel": "Panel access"
   },

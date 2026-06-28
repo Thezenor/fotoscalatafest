@@ -1,9 +1,11 @@
 "use server";
 
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { requireRole } from "@/server/auth/guards";
 import { prisma } from "@/server/db";
 import { moderatePhoto, type ModerationAction } from "@/server/services/photo.service";
+import { fulfillPrintOrder } from "@/server/services/admin.service";
 import { logAudit } from "@/server/services/audit.service";
 
 async function clientIp() {
@@ -15,6 +17,14 @@ async function clientIp() {
 export async function moderateAction(photoId: string, action: ModerationAction) {
   const user = await requireRole("MODERATOR");
   await moderatePhoto(photoId, action, { userId: user.id, ip: await clientIp() });
+  return { ok: true };
+}
+
+/** Marca una copia como impresa (estación de impresión, rol MODERATOR+). */
+export async function fulfillPrintAction(orderId: string) {
+  const user = await requireRole("MODERATOR");
+  await fulfillPrintOrder(orderId, user.id);
+  revalidatePath("/admin/impresion");
   return { ok: true };
 }
 

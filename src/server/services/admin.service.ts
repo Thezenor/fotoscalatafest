@@ -149,6 +149,50 @@ export async function resolveRemoval(id: string, actorId?: string | null, takedo
   await logAudit({ action: "REMOVAL_RESOLVED", entityType: "RemovalRequest", entityId: id, userId: actorId ?? null });
 }
 
+// ─────────── Impresión en sitio ───────────
+
+/** Cola de copias pagadas pendientes de imprimir (FIFO). */
+export async function listPrintQueue() {
+  return prisma.printOrder.findMany({
+    where: { kind: "print", status: "PAID" },
+    orderBy: { paidAt: "asc" },
+    include: { photo: { select: { id: true, printCode: true, stage: { select: { name: true } }, day: true, timeLabel: true } } },
+  });
+}
+
+/** Copias ya impresas (historial reciente). */
+export async function listPrintFulfilled(take = 30) {
+  return prisma.printOrder.findMany({
+    where: { kind: "print", status: "FULFILLED" },
+    orderBy: { paidAt: "desc" },
+    take,
+    include: { photo: { select: { id: true, printCode: true, stage: { select: { name: true } } } } },
+  });
+}
+
+export async function countPrintQueue() {
+  return prisma.printOrder.count({ where: { kind: "print", status: "PAID" } });
+}
+
+/** Busca un pedido de impresión PAGADO por el código de la foto. */
+export async function findPrintByCode(code: string) {
+  const photo = await prisma.photo.findUnique({
+    where: { printCode: code.trim().toUpperCase() },
+    select: { id: true, printCode: true, stage: { select: { name: true } } },
+  });
+  if (!photo) return null;
+  const order = await prisma.printOrder.findFirst({
+    where: { photoId: photo.id, kind: "print", status: { in: ["PAID", "FULFILLED"] } },
+    orderBy: { paidAt: "desc" },
+  });
+  return order ? { order, photo } : null;
+}
+
+export async function fulfillPrintOrder(id: string, actorId?: string | null) {
+  await prisma.printOrder.update({ where: { id }, data: { status: "FULFILLED" } });
+  await logAudit({ action: "PRINT_FULFILLED", entityType: "PrintOrder", entityId: id, userId: actorId ?? null });
+}
+
 // ─────────── Datos de exportación ───────────
 
 export async function getExportData(eventId: string) {

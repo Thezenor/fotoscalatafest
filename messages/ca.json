@@ -131,6 +131,8 @@
     "templatesDesc": "Plantilles vertical/horitzontal amb logo del patrocinador.",
     "payments": "Pagaments i preus",
     "paymentsDesc": "Venda de fotos: Stripe, PayPal i preus.",
+    "printing": "Impressió al lloc",
+    "printingDesc": "Cua de còpies pagades per imprimir.",
     "soon": "Properament",
     "openPanel": "Accés panell"
   },

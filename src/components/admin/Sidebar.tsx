@@ -6,6 +6,7 @@ import {
   Tent,
   Settings,
   Home,
+  Printer,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/ui/Logo";
@@ -91,6 +92,12 @@ export function Sidebar({
       </nav>
 
       <div className="flex flex-col gap-2 border-t border-surface-2 px-3 py-4">
+        <Link
+          href="/admin/impresion"
+          className="flex items-center gap-2.5 rounded-sm px-2 py-2 font-body text-[13px] text-white hover:text-brand"
+        >
+          <Printer className="h-4 w-4" /> Impresión
+        </Link>
         {superadmin && (
           <Link
             href="/superadmin"

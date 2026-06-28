@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import QRCode from "qrcode";
 import { prisma } from "@/server/db";
-import { readObject, readAnyObject } from "@/server/services/storage.service";
+import { readAnyObject } from "@/server/services/storage.service";
 import { makeTreatedPhoto, detectOrientation } from "@/server/services/image.service";
 import { getBranding, getTemplates } from "@/server/services/settings.service";
 import { siteUrl } from "@/lib/seo";
@@ -48,7 +48,9 @@ export async function generateTreated(photoId: string, mode: "download" | "print
   const photo = await prisma.photo.findUnique({ where: { id: photoId } });
   if (!photo) return null;
 
-  const { buffer: original } = await readObject(photo.originalKey);
+  const obj = await readAnyObject(photo.originalKey);
+  if (!obj) return null;
+  const original = obj.buffer;
   const orientation = detectOrientation(photo.width ?? undefined, photo.height ?? undefined);
   const templates = await getTemplates();
   const tpl = orientation === "vertical" ? templates.vertical : templates.horizontal;

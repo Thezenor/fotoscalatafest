@@ -131,6 +131,8 @@
     "templatesDesc": "Plantillas vertical/horizontal con logo del sponsor.",
     "payments": "Pagos y precios",
     "paymentsDesc": "Venta de fotos: Stripe, PayPal y precios.",
+    "printing": "Impresión en sitio",
+    "printingDesc": "Cola de copias pagadas para imprimir.",
     "soon": "Próximamente",
     "openPanel": "Acceso panel"
   },
