@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/server/db";
 import { logAudit } from "@/server/services/audit.service";
-import { deleteObject } from "@/server/services/storage.service";
+import { deleteObject, publicUrl } from "@/server/services/storage.service";
 import type { Role } from "@prisma/client";
 
 // ─────────── Usuarios y roles ───────────
@@ -84,11 +84,92 @@ export async function updateEventConfig(
     watermarkOpacity?: number;
     autoApproveOnAiClean?: boolean;
     sponsors?: string[];
+    downloadMode?: string;
   },
   actorId?: string | null,
 ) {
   await prisma.event.update({ where: { id }, data });
   await logAudit({ action: "EVENT_CONFIG_UPDATED", entityType: "Event", entityId: id, userId: actorId ?? null, metadata: data });
+}
+
+// ─────────── Escenarios (stages) ───────────
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40) || "escenario";
+}
+
+/** Escenarios de un evento con nº de fotos aprobadas y la foto-banner actual. */
+export async function listEventStages(eventId: string) {
+  const stages = await prisma.stage.findMany({
+    where: { eventId },
+    orderBy: { order: "asc" },
+    include: { _count: { select: { photos: true } } },
+  });
+  return stages;
+}
+
+/** Fotos aprobadas de un escenario (para elegir la que se muestra en público). */
+export async function listStagePhotoOptions(stageId: string) {
+  const photos = await prisma.photo.findMany({
+    where: { stageId, status: "APPROVED" },
+    orderBy: { createdAt: "desc" },
+    take: 60,
+    select: { id: true, printCode: true, thumbnailKey: true, watermarkedKey: true, originalKey: true, authorName: true, authorInstagram: true },
+  });
+  return photos.map((p) => {
+    const demo = p.originalKey.startsWith("/") ? publicUrl(p.originalKey) : null;
+    return {
+      id: p.id,
+      printCode: p.printCode,
+      url: publicUrl(p.thumbnailKey) ?? publicUrl(p.watermarkedKey) ?? demo ?? "",
+      author: p.authorName ?? p.authorInstagram ?? null,
+    };
+  });
+}
+
+export async function createStage(
+  eventId: string,
+  input: { name: string; sub?: string | null; dayLabel?: string | null },
+  actorId?: string | null,
+) {
+  const count = await prisma.stage.count({ where: { eventId } });
+  let slug = slugify(input.name);
+  // garantizar unicidad (eventId, slug)
+  const existing = await prisma.stage.findFirst({ where: { eventId, slug } });
+  if (existing) slug = `${slug}-${count + 1}`;
+  const stage = await prisma.stage.create({
+    data: {
+      eventId,
+      name: input.name.trim(),
+      slug,
+      sub: input.sub?.trim() || null,
+      dayLabel: input.dayLabel?.trim() || null,
+      order: count,
+    },
+  });
+  await logAudit({ action: "STAGE_CREATED", entityType: "Stage", entityId: stage.id, userId: actorId ?? null, metadata: { eventId, name: stage.name } });
+  return stage;
+}
+
+export async function updateStage(
+  id: string,
+  data: { name?: string; sub?: string | null; dayLabel?: string | null; order?: number; bannerUrl?: string | null },
+  actorId?: string | null,
+) {
+  await prisma.stage.update({ where: { id }, data });
+  await logAudit({ action: "STAGE_UPDATED", entityType: "Stage", entityId: id, userId: actorId ?? null, metadata: data });
+}
+
+export async function deleteStage(id: string, actorId?: string | null) {
+  // Las fotos quedan con stageId = null (onDelete: SetNull en el esquema).
+  await prisma.stage.delete({ where: { id } });
+  await logAudit({ action: "STAGE_DELETED", entityType: "Stage", entityId: id, userId: actorId ?? null });
 }
 
 // ─────────── Estadísticas de moderación ───────────

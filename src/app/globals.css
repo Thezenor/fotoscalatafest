@@ -43,6 +43,14 @@
   --animate-pulse-soft: pulseSoft 1.4s ease-in-out infinite;
   --animate-pop: pop 0.5s ease both;
   --animate-fade-in: fadeIn 0.6s ease both;
+  /* TV en directo */
+  --animate-tv-fade: tvFade 0.9s ease both;
+  --animate-tv-zoom: tvZoom 9s ease-out both;
+  --animate-tv-card: tvCard 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-sweep: sweep 5.5s ease-in-out infinite;
+  --animate-glow: glow 3.2s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-blink: blink 1.1s steps(2, start) infinite;
 }
 
 @keyframes marquee {
@@ -90,6 +98,87 @@
   to {
     opacity: 1;
   }
+}
+
+/* ── TV en directo: transiciones dinámicas ── */
+@keyframes tvFade {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes tvZoom {
+  from {
+    transform: scale(1.02) translate(0, 0);
+  }
+  to {
+    transform: scale(1.16) translate(-1.5%, -1.5%);
+  }
+}
+@keyframes tvCard {
+  from {
+    opacity: 0;
+    transform: translateY(40px) rotate(-3deg) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+@keyframes sweep {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.55;
+  }
+  40% {
+    transform: translateX(220%) skewX(-18deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--brand), 0 0 22px 4px rgba(249, 180, 26, 0.55),
+      inset 0 0 30px rgba(249, 180, 26, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 3px var(--brand), 0 0 48px 10px rgba(249, 180, 26, 0.85),
+      inset 0 0 60px rgba(249, 180, 26, 0.4);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Alias corto del acento (varios componentes usan var(--brand)). */
+:root {
+  --brand: var(--color-brand);
 }
 
 html,

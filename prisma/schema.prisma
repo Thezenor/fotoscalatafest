@@ -62,6 +62,11 @@ model Event {
   // Patrocinadores de este evento (nombres). Si null, se usan los globales.
   sponsors Json?
 
+  // Modo de descarga de las fotos de este evento:
+  // "free" → botón de descarga gratuito visible.
+  // "paid" → sin descarga gratis; se muestra el código para localizarla y comprarla/imprimirla.
+  downloadMode String @default("paid")
+
   stages    Stage[]
   photos    Photo[]
   consents  Consent[]

@@ -33,6 +33,7 @@ export interface Photo {
   onScreen: boolean;
   aiVerdict?: string; // PENDING | CLEAN | NSFW | VIOLENCE | MINOR_SUSPECTED | ERROR
   printCode?: string; // código único visible para identificar/imprimir
+  downloadFree?: boolean; // el evento permite descarga gratuita (si no, solo compra/impresión)
   createdAt: string;
 }
 

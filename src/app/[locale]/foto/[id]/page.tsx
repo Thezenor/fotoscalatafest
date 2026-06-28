@@ -119,22 +119,45 @@ export default async function PhotoPage({
               </span>
             </div>
 
-            <div className="flex gap-3">
-              {/* TODO(backend): /api/photos/:id/download (alta calidad con marca de agua) */}
-              <a
-                href={photo.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonClass({ size: "md", className: "flex-1 uppercase" })}
-              >
-                <Download className="h-5 w-5" /> {tc("download")}
-              </a>
-              <ShareButton label="" url={`/foto/${photo.id}`} variant="secondary" />
-            </div>
-
-            <Link href={`/comprar/${photo.id}`} className={buttonClass({ variant: "secondary", size: "md", className: "w-full uppercase" })}>
-              <ShoppingBag className="h-5 w-5" /> Conseguir / imprimir
-            </Link>
+            {photo.downloadFree ? (
+              <>
+                <div className="flex gap-3">
+                  <a
+                    href={photo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonClass({ size: "md", className: "flex-1 uppercase" })}
+                  >
+                    <Download className="h-5 w-5" /> {tc("download")}
+                  </a>
+                  <ShareButton label="" url={`/foto/${photo.id}`} variant="secondary" />
+                </div>
+                <Link href={`/comprar/${photo.id}`} className={buttonClass({ variant: "secondary", size: "md", className: "w-full uppercase" })}>
+                  <ShoppingBag className="h-5 w-5" /> {t("buyPrint")}
+                </Link>
+              </>
+            ) : (
+              <>
+                {/* Evento de pago: sin descarga gratis. Se muestra el código para localizar la foto. */}
+                {photo.printCode && (
+                  <div className="rounded-md border border-brand/40 bg-brand/10 p-4 text-center">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-mist">
+                      {t("photoCode")}
+                    </p>
+                    <p className="mt-1 font-display text-4xl font-bold tracking-wider text-brand">
+                      #{photo.printCode}
+                    </p>
+                    <p className="mt-1 font-body text-[13px] text-mist">{t("photoCodeHint")}</p>
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <Link href={`/comprar/${photo.id}`} className={buttonClass({ size: "md", className: "flex-1 uppercase" })}>
+                    <ShoppingBag className="h-5 w-5" /> {t("buyPrint")}
+                  </Link>
+                  <ShareButton label="" url={`/foto/${photo.id}`} variant="secondary" />
+                </div>
+              </>
+            )}
 
             <QRBlock
               value={`https://fotoscalatafest.com/foto/${photo.id}`}

@@ -9,7 +9,11 @@ import {
   setUserActive,
   updateEventConfig,
   resolveRemoval,
+  createStage,
+  updateStage,
+  deleteStage,
 } from "@/server/services/admin.service";
+import { setTvConfig, type TvConfig } from "@/server/services/settings.service";
 import type { Role } from "@prisma/client";
 
 const ROLES = ["SUPERADMIN", "ADMIN", "MODERATOR"] as const;
@@ -72,9 +76,50 @@ export async function updateEventAction(
     watermarkOpacity?: number;
     autoApproveOnAiClean?: boolean;
     sponsors?: string[];
+    downloadMode?: string;
   },
 ) {
   const actor = await requireRole("SUPERADMIN");
   await updateEventConfig(id, data, actor.id);
   revalidatePath("/superadmin/eventos");
+}
+
+// ── Escenarios ──
+
+export async function createStageAction(
+  eventId: string,
+  input: { name: string; sub?: string; dayLabel?: string },
+) {
+  const actor = await requireRole("SUPERADMIN");
+  if (!input.name?.trim()) return { error: "El nombre del escenario es obligatorio." };
+  await createStage(eventId, input, actor.id);
+  revalidatePath("/superadmin/eventos");
+  return { ok: true };
+}
+
+export async function updateStageAction(
+  id: string,
+  data: { name?: string; sub?: string | null; dayLabel?: string | null; bannerUrl?: string | null },
+) {
+  const actor = await requireRole("SUPERADMIN");
+  await updateStage(id, data, actor.id);
+  revalidatePath("/superadmin/eventos");
+  return { ok: true };
+}
+
+export async function deleteStageAction(id: string) {
+  const actor = await requireRole("SUPERADMIN");
+  await deleteStage(id, actor.id);
+  revalidatePath("/superadmin/eventos");
+  return { ok: true };
+}
+
+// ── TV en directo ──
+
+export async function saveTvConfigAction(cfg: TvConfig) {
+  const actor = await requireRole("SUPERADMIN");
+  await setTvConfig(cfg, actor.id);
+  revalidatePath("/superadmin/tv");
+  revalidatePath("/live");
+  return { ok: true };
 }

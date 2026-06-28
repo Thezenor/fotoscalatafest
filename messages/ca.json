@@ -64,7 +64,10 @@
   "photo": {
     "scanToDownload": "Escaneja per descarregar",
     "scanCaption": "Emporta't la teva foto en alta qualitat al mòbil.",
-    "requestRemoval": "Sol·licitar la retirada d'aquesta foto"
+    "requestRemoval": "Sol·licitar la retirada d'aquesta foto",
+    "buyPrint": "Aconseguir / imprimir",
+    "photoCode": "Codi de la foto",
+    "photoCodeHint": "Dóna aquest codi al punt d'impressió."
   },
   "live": {
     "liveNow": "Fotos en directe",
@@ -133,6 +136,8 @@
     "paymentsDesc": "Venda de fotos: Stripe, PayPal i preus.",
     "printing": "Impressió al lloc",
     "printingDesc": "Cua de còpies pagades per imprimir.",
+    "tv": "TV en directe",
+    "tvDesc": "Plantilles dinàmiques per a la pantalla del recinte.",
     "soon": "Properament",
     "openPanel": "Accés panell"
   },

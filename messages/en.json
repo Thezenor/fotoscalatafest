@@ -64,7 +64,10 @@
   "photo": {
     "scanToDownload": "Scan to download",
     "scanCaption": "Get your photo in high quality on your phone.",
-    "requestRemoval": "Request removal of this photo"
+    "requestRemoval": "Request removal of this photo",
+    "buyPrint": "Get / print",
+    "photoCode": "Photo code",
+    "photoCodeHint": "Give this code at the print station."
   },
   "live": {
     "liveNow": "Photos live",
@@ -133,6 +136,8 @@
     "paymentsDesc": "Photo sales: Stripe, PayPal and prices.",
     "printing": "On-site printing",
     "printingDesc": "Queue of paid copies to print.",
+    "tv": "Live TV",
+    "tvDesc": "Dynamic templates for the venue screen.",
     "soon": "Coming soon",
     "openPanel": "Panel access"
   },

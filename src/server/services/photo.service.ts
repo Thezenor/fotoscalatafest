@@ -5,7 +5,10 @@ import type { AiResult } from "@/server/services/ai-moderation.service";
 import type { Photo as PhotoDTO, Day } from "@/lib/mock-data";
 import type { Photo as DbPhoto, Stage, PhotoStatus, Prisma } from "@prisma/client";
 
-type DbPhotoWithStage = DbPhoto & { stage: Stage | null };
+type DbPhotoWithStage = DbPhoto & {
+  stage: Stage | null;
+  event?: { downloadMode: string } | null;
+};
 
 /** Mapea la fila de Prisma al DTO que consumen los componentes del diseño. */
 function toDTO(p: DbPhotoWithStage): PhotoDTO {
@@ -37,6 +40,7 @@ function toDTO(p: DbPhotoWithStage): PhotoDTO {
     onScreen: p.onScreen,
     aiVerdict: p.aiVerdict,
     printCode: p.printCode ?? undefined,
+    downloadFree: p.event ? p.event.downloadMode === "free" : undefined,
     createdAt: p.createdAt.toISOString(),
   };
 }
@@ -105,7 +109,10 @@ export async function listOnScreenPhotos() {
 }
 
 export async function getPublicPhoto(id: string) {
-  const row = await prisma.photo.findUnique({ where: { id }, include: { stage: true } });
+  const row = await prisma.photo.findUnique({
+    where: { id },
+    include: { stage: true, event: { select: { downloadMode: true } } },
+  });
   return row ? toDTO(row) : null;
 }
 

@@ -64,7 +64,10 @@
   "photo": {
     "scanToDownload": "Escanea para descargar",
     "scanCaption": "Llévate tu foto en alta calidad a tu móvil.",
-    "requestRemoval": "Solicitar retirada de esta foto"
+    "requestRemoval": "Solicitar retirada de esta foto",
+    "buyPrint": "Conseguir / imprimir",
+    "photoCode": "Código de la foto",
+    "photoCodeHint": "Da este código en el punto de impresión."
   },
   "live": {
     "liveNow": "Fotos en directo",
@@ -133,6 +136,8 @@
     "paymentsDesc": "Venta de fotos: Stripe, PayPal y precios.",
     "printing": "Impresión en sitio",
     "printingDesc": "Cola de copias pagadas para imprimir.",
+    "tv": "TV en directo",
+    "tvDesc": "Plantillas dinámicas para la pantalla del recinto.",
     "soon": "Próximamente",
     "openPanel": "Acceso panel"
   },

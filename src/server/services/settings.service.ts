@@ -147,6 +147,22 @@ const DEFAULT_PAYMENTS: Payments = {
 export const getPayments = () => getSetting<Payments>("payments", DEFAULT_PAYMENTS);
 export const setPayments = (v: Payments, actorId?: string | null) => setSetting("payments", v, actorId);
 
+// ── TV en directo (pantalla de proyección) ──
+export interface TvConfig {
+  template: string; // clave de plantilla: cinematic | neon | stack | mosaico | destacadas
+  intervalMs: number; // cadencia de rotación
+  showSponsors: boolean; // mostrar franja de patrocinadores
+  showQr: boolean; // mostrar QR "sube tu foto"
+}
+const DEFAULT_TV: TvConfig = {
+  template: "cinematic",
+  intervalMs: 5000,
+  showSponsors: true,
+  showQr: true,
+};
+export const getTvConfig = () => getSetting<TvConfig>("tv", DEFAULT_TV);
+export const setTvConfig = (v: TvConfig, actorId?: string | null) => setSetting("tv", v, actorId);
+
 // ── Precios (tienda) ──
 const DEFAULT_PRINT: PrintConfig = {
   downloadEnabled: false,
