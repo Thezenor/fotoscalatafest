@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
-import { listApprovedPhotos, createUploadedPhoto, getActiveEvent } from "@/server/services/photo.service";
+import {
+  listApprovedPhotos,
+  createUploadedPhoto,
+  getActiveEvent,
+  applyAiModeration,
+} from "@/server/services/photo.service";
 import { createConsent } from "@/server/services/consent.service";
 import { saveObject } from "@/server/services/storage.service";
 import { makeThumbnail, makeWatermarked } from "@/server/services/image.service";
+import { analyzeImage } from "@/server/services/ai-moderation.service";
 
 export const runtime = "nodejs";
 
@@ -99,6 +105,16 @@ export async function POST(req: NextRequest) {
     ip,
   });
 
-  // TODO(Fase 4/6): encolar generación de thumbnail + marca de agua + moderación IA.
+  // Moderación IA (Google Vision). Si no hay credenciales, queda PENDING (manual).
+  // TODO(escala): mover a un worker BullMQ para no bloquear la respuesta.
+  try {
+    const ai = await analyzeImage(clean);
+    await applyAiModeration(photo.id, ai, {
+      autoApproveOnAiClean: event.autoApproveOnAiClean,
+    });
+  } catch (err) {
+    console.error("[upload] moderación IA falló (queda PENDING)", err);
+  }
+
   return NextResponse.json({ ok: true, id: photo.id, status: "pending" }, { status: 201 });
 }

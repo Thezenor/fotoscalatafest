@@ -1,8 +1,9 @@
 import { prisma } from "@/server/db";
 import { publicUrl } from "@/server/services/storage.service";
 import { logAudit } from "@/server/services/audit.service";
+import type { AiResult } from "@/server/services/ai-moderation.service";
 import type { Photo as PhotoDTO, Day } from "@/lib/mock-data";
-import type { Photo as DbPhoto, Stage, PhotoStatus } from "@prisma/client";
+import type { Photo as DbPhoto, Stage, PhotoStatus, Prisma } from "@prisma/client";
 
 type DbPhotoWithStage = DbPhoto & { stage: Stage | null };
 
@@ -199,4 +200,40 @@ export async function createUploadedPhoto(input: {
     metadata: { stage: input.stageSlug },
   });
   return photo;
+}
+
+/**
+ * Aplica el resultado de la IA a una foto y decide su estado:
+ * - NSFW / VIOLENCE / MINOR_SUSPECTED → AI_FLAGGED (revisión humana forzada).
+ * - CLEAN → APPROVED si el evento auto-aprueba, si no AI_APPROVED (espera manual).
+ * - ERROR / skipped → se queda PENDING (cola manual). Nunca auto-aprueba ante fallo.
+ */
+export async function applyAiModeration(
+  photoId: string,
+  result: AiResult,
+  opts: { autoApproveOnAiClean: boolean },
+) {
+  let status: PhotoStatus | undefined;
+  if (result.verdict === "NSFW" || result.verdict === "VIOLENCE" || result.verdict === "MINOR_SUSPECTED") {
+    status = "AI_FLAGGED";
+  } else if (result.verdict === "CLEAN") {
+    status = opts.autoApproveOnAiClean ? "APPROVED" : "AI_APPROVED";
+  } // PENDING/ERROR → no cambia el estado (sigue PENDING)
+
+  await prisma.photo.update({
+    where: { id: photoId },
+    data: {
+      aiVerdict: result.verdict,
+      aiScore: (result.scores as Prisma.InputJsonValue) ?? undefined,
+      aiReviewedAt: result.skipped ? null : new Date(),
+      ...(status ? { status } : {}),
+    },
+  });
+
+  await logAudit({
+    action: "PHOTO_AI_REVIEWED",
+    entityType: "Photo",
+    entityId: photoId,
+    metadata: { verdict: result.verdict, skipped: result.skipped, status: status ?? "PENDING" },
+  });
 }

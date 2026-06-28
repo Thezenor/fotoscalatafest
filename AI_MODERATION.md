@@ -34,9 +34,14 @@
 
 ## Configuración
 
-- Credenciales: `GOOGLE_APPLICATION_CREDENTIALS` (JSON de service account) o
-  `GOOGLE_VISION_KEY` según método. Ver `.env.example`.
+- Credenciales: `GOOGLE_VISION_CREDENTIALS` (JSON del service account como string,
+  cómodo en Railway) o `GOOGLE_APPLICATION_CREDENTIALS` (ruta al fichero, ADC).
+  Ver `.env.example`.
+- **Sin credenciales la IA se desactiva**: las fotos quedan `PENDING` para moderación
+  manual (degradación segura). Implementado en `ai-moderation.service.ts` (`isAiConfigured`).
 - Umbrales configurables en `ai-moderation.service.ts` (constantes revisables sin migración).
+- La detección de menores NO es fiable con SafeSearch+Face → se delega a consentimiento +
+  humano. Para detección de edad robusta, integrar un proveedor especializado.
 
 ## Resiliencia
 
