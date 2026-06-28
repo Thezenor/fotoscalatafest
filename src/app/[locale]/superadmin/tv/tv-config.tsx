@@ -65,6 +65,15 @@ export function TvConfig({ initial, locale, siteUrl }: { initial: TvConfigDTO; l
       {/* Columna de configuración */}
       <div className="flex flex-col gap-5">
         <div>
+          <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border border-line bg-surface px-3 py-2">
+            <span className="font-mono text-[11px] uppercase tracking-wide text-mist">Activa en /live:</span>
+            <span className="rounded-pill bg-brand px-2.5 py-0.5 font-display text-[13px] font-bold text-brand-ink">
+              {TV_TEMPLATES.find((t) => t.key === initial.template)?.label ?? initial.template}
+            </span>
+            {cfg.template !== initial.template && (
+              <span className="font-body text-[12px] text-mist">→ guarda para aplicar «{TV_TEMPLATES.find((t) => t.key === cfg.template)?.label}»</span>
+            )}
+          </div>
           <p className="mb-2 font-mono text-xs uppercase tracking-wide text-mist">Plantilla</p>
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
             {TV_TEMPLATES.map((tpl) => {
