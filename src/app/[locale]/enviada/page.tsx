@@ -14,6 +14,7 @@ export default async function ConfirmPage({
   setRequestLocale(locale);
   const t = await getTranslations("confirm");
   const tc = await getTranslations("common");
+  const tm = await getTranslations("myphotos");
 
   return (
     <main className="relative mx-auto flex w-full max-w-[480px] flex-1 flex-col">
@@ -44,7 +45,10 @@ export default async function ConfirmPage({
       </div>
 
       <div className="relative z-10 flex flex-col gap-3 p-5">
-        <Link href="/galeria" className={buttonClass({ className: "w-full uppercase" })}>
+        <Link href="/mis-fotos" className={buttonClass({ className: "w-full uppercase" })}>
+          {tm("title")}
+        </Link>
+        <Link href="/galeria" className={buttonClass({ variant: "secondary", className: "w-full uppercase" })}>
           {tc("viewGallery")}
         </Link>
         <Link href="/" className={buttonClass({ variant: "secondary", className: "w-full uppercase" })}>

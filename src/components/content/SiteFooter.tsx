@@ -6,6 +6,7 @@ import { getBranding } from "@/server/services/settings.service";
 /** Pie de página público: enlaces, legal, colaboradores y crédito de desarrollo. */
 export async function SiteFooter() {
   const t = await getTranslations("footer");
+  const tm = await getTranslations("myphotos");
   const branding = await getBranding();
   const year = new Date().getFullYear();
 
@@ -31,6 +32,7 @@ export async function SiteFooter() {
             <li><Link href="/galeria" className={linkCls}>{t("gallery")}</Link></li>
             <li><Link href="/escenarios" className={linkCls}>{t("stages")}</Link></li>
             <li><Link href="/escenarios" className={linkCls}>{t("upload")}</Link></li>
+            <li><Link href="/mis-fotos" className={linkCls}>{tm("title")}</Link></li>
           </ul>
         </nav>
 

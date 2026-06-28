@@ -39,6 +39,14 @@
     "rights": "All rights reserved.",
     "developedBy": "Developed by"
   },
+  "myphotos": {
+    "title": "My photos",
+    "subtitle": "The photos you've uploaded from this device.",
+    "empty": "You haven't uploaded any photos from this device yet.",
+    "uploadCta": "Upload my photo",
+    "reviewing": "Under review",
+    "approved": "Published"
+  },
   "selector": {
     "title": "Choose stage",
     "subtitle": "Where are you right now?",
@@ -59,6 +67,9 @@
     "legalAge": "I confirm I am over 18 or have authorization.",
     "submit": "Send photo",
     "submitting": "Sending…",
+    "readTerms": "Read terms & conditions",
+    "error": "Upload failed, please try again.",
+    "hint": "Select a photo and accept the conditions to continue.",
     "pendingNotice": "Photo received. It will remain pending approval before being published.",
     "stage": "Stage: {stage}",
     "consentOk": "Consent recorded. You can now upload your photos!",
@@ -156,6 +167,10 @@
     "printingDesc": "Queue of paid copies to print.",
     "tv": "Live TV",
     "tvDesc": "Dynamic templates for the venue screen.",
+    "revenue": "Revenue",
+    "revenueDesc": "Download/print sales and orders.",
+    "help": "Help & support",
+    "helpDesc": "What each part of the site does and support contact.",
     "soon": "Coming soon",
     "openPanel": "Panel access"
   },

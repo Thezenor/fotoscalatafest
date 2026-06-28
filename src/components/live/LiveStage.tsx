@@ -48,6 +48,10 @@ export function LiveStage({
   const [now, setNow] = useState<string>("");
   const [livePhotos, setLivePhotos] = useState<Photo[]>(photos);
   const [liveFeatured, setLiveFeatured] = useState<Photo[]>(featured);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  // "Acaba de llegar": foto subida/aprobada hace < 2 min (solo en cliente).
+  const isRecent = (p: Photo) => mounted && !!p.createdAt && Date.now() - Date.parse(p.createdAt) < 120000;
 
   // Refresco en tiempo real: sondea /api/live cada 20s para traer fotos nuevas.
   useEffect(() => {
@@ -193,7 +197,7 @@ export function LiveStage({
           <div className="relative flex-1 overflow-hidden rounded-md">
             <PhotoLayer photo={current} kenBurns />
             <CornerQR landingUrl={landingUrl} labels={labels} show={showQr} />
-            <HeroCaption title={title(current)} sub={sub(current)} handle={handle(current)} code={current.printCode} />
+            <HeroCaption title={title(current)} sub={sub(current)} handle={handle(current)} code={current.printCode} recent={isRecent(current)} />
           </div>
         )}
 
@@ -219,7 +223,7 @@ export function LiveStage({
           <>
             <div className="relative flex-[1.55] overflow-hidden rounded-md">
               <PhotoLayer photo={current} kenBurns />
-              <HeroCaption title={title(current)} sub={sub(current)} handle={handle(current)} code={current.printCode} />
+              <HeroCaption title={title(current)} sub={sub(current)} handle={handle(current)} code={current.printCode} recent={isRecent(current)} />
             </div>
             <div className="flex flex-1 flex-col gap-5">
               {showQr && (
@@ -307,7 +311,9 @@ function HeroPhoto({ photo }: { photo: Photo }) {
     <div className="absolute inset-0 overflow-hidden bg-ink-pure">
       {layers.map((l, i) => (
         <div key={l.k} className={cn("absolute inset-0", i === layers.length - 1 && "animate-tv-fade")}>
-          <div className="animate-tv-zoom h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${l.url})` }} />
+          <div className="animate-tv-zoom absolute inset-0">
+            <Image src={l.url} alt="" fill sizes="100vw" className="object-cover" priority={i === layers.length - 1} />
+          </div>
         </div>
       ))}
     </div>
@@ -416,7 +422,7 @@ function Card({
   return (
     <div className={cn("absolute inset-0 overflow-hidden rounded-lg border-4 border-white bg-white shadow-card", className)}>
       <div className="relative h-full w-full">
-        <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${photo.url})` }} />
+        <Image src={photo.url} alt="" fill sizes="60vw" className="object-cover" />
         {front && (
           <>
             <div className="overlay-vert absolute inset-0" />
@@ -437,15 +443,22 @@ function Card({
   );
 }
 
-function HeroCaption({ title, sub, handle, code }: { title: string; sub: string; handle: string; code?: string }) {
+function HeroCaption({ title, sub, handle, code, recent }: { title: string; sub: string; handle: string; code?: string; recent?: boolean }) {
   return (
     <>
       <div className="overlay-vert absolute inset-0" />
-      {code && (
-        <span className="absolute left-5 top-5 rounded-pill bg-brand px-4 py-1.5 font-mono text-[18px] font-bold text-brand-ink">
-          #{code}
-        </span>
-      )}
+      <div className="absolute left-5 top-5 flex items-center gap-2">
+        {code && (
+          <span className="rounded-pill bg-brand px-4 py-1.5 font-mono text-[18px] font-bold text-brand-ink">
+            #{code}
+          </span>
+        )}
+        {recent && (
+          <span className="animate-pulse-soft rounded-pill bg-white px-3 py-1.5 font-display text-[14px] font-bold uppercase text-ink">
+            ¡Acaba de llegar!
+          </span>
+        )}
+      </div>
       <div className="absolute inset-x-0 bottom-0 p-8">
         <p className="font-mono text-[14px] font-semibold uppercase tracking-wide text-brand">{sub}</p>
         <p className="font-display text-[38px] font-bold leading-tight text-white">{title}</p>

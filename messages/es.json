@@ -39,6 +39,14 @@
     "rights": "Todos los derechos reservados.",
     "developedBy": "Desarrollado por"
   },
+  "myphotos": {
+    "title": "Mis fotos",
+    "subtitle": "Las fotos que has subido desde este dispositivo.",
+    "empty": "Aún no has subido ninguna foto desde este dispositivo.",
+    "uploadCta": "Subir mi foto",
+    "reviewing": "En revisión",
+    "approved": "Publicada"
+  },
   "selector": {
     "title": "Elige escenario",
     "subtitle": "¿Dónde estás ahora mismo?",
@@ -59,6 +67,9 @@
     "legalAge": "Confirmo que soy mayor de 18 años o cuento con autorización.",
     "submit": "Enviar foto",
     "submitting": "Enviando…",
+    "readTerms": "Leer términos y condiciones",
+    "error": "No se pudo subir, inténtalo de nuevo.",
+    "hint": "Selecciona una foto y acepta las condiciones para continuar.",
     "pendingNotice": "Foto recibida. Quedará pendiente de aprobación antes de publicarse.",
     "stage": "Escenario: {stage}",
     "consentOk": "Consentimiento registrado. ¡Ya puedes subir tus fotos!",
@@ -156,6 +167,10 @@
     "printingDesc": "Cola de copias pagadas para imprimir.",
     "tv": "TV en directo",
     "tvDesc": "Plantillas dinámicas para la pantalla del recinto.",
+    "revenue": "Ingresos",
+    "revenueDesc": "Ventas de descargas e impresiones y pedidos.",
+    "help": "Ayuda y soporte",
+    "helpDesc": "Qué hace cada parte de la web y contacto de soporte.",
     "soon": "Próximamente",
     "openPanel": "Acceso panel"
   },

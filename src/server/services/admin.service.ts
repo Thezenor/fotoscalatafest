@@ -274,6 +274,56 @@ export async function fulfillPrintOrder(id: string, actorId?: string | null) {
   await logAudit({ action: "PRINT_FULFILLED", entityType: "PrintOrder", entityId: id, userId: actorId ?? null });
 }
 
+// ─────────── Ingresos (negocio) ───────────
+
+/** Métricas de ingresos a partir de los pedidos pagados/entregados. */
+export async function getRevenueStats() {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const PAID = { status: { in: ["PAID", "FULFILLED"] as ("PAID" | "FULFILLED")[] } };
+
+  const [agg, todayAgg, byKind, byProvider, pendingCount, recent] = await Promise.all([
+    prisma.printOrder.aggregate({ where: PAID, _sum: { amountCents: true }, _count: true }),
+    prisma.printOrder.aggregate({
+      where: { ...PAID, paidAt: { gte: startOfDay } },
+      _sum: { amountCents: true },
+      _count: true,
+    }),
+    prisma.printOrder.groupBy({ by: ["kind"], where: PAID, _sum: { amountCents: true }, _count: true }),
+    prisma.printOrder.groupBy({ by: ["provider"], where: PAID, _sum: { amountCents: true }, _count: true }),
+    prisma.printOrder.count({ where: { status: "PENDING" } }),
+    prisma.printOrder.findMany({
+      where: PAID,
+      orderBy: { paidAt: "desc" },
+      take: 25,
+      include: { photo: { select: { printCode: true } } },
+    }),
+  ]);
+
+  const totalCents = agg._sum.amountCents ?? 0;
+  const count = agg._count ?? 0;
+  return {
+    totalCents,
+    count,
+    avgCents: count ? Math.round(totalCents / count) : 0,
+    todayCents: todayAgg._sum.amountCents ?? 0,
+    todayCount: todayAgg._count ?? 0,
+    pendingCount,
+    byKind: byKind.map((k) => ({ kind: k.kind, cents: k._sum.amountCents ?? 0, count: k._count })),
+    byProvider: byProvider.map((p) => ({ provider: p.provider ?? "—", cents: p._sum.amountCents ?? 0, count: p._count })),
+    recent: recent.map((o) => ({
+      id: o.id,
+      kind: o.kind,
+      status: o.status,
+      provider: o.provider ?? "—",
+      amountCents: o.amountCents,
+      currency: o.currency,
+      printCode: o.photo?.printCode ?? null,
+      paidAt: o.paidAt ? o.paidAt.toISOString() : null,
+    })),
+  };
+}
+
 // ─────────── Datos de exportación ───────────
 
 export async function getExportData(eventId: string) {

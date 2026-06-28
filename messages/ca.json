@@ -39,6 +39,14 @@
     "rights": "Tots els drets reservats.",
     "developedBy": "Desenvolupat per"
   },
+  "myphotos": {
+    "title": "Les meves fotos",
+    "subtitle": "Les fotos que has pujat des d'aquest dispositiu.",
+    "empty": "Encara no has pujat cap foto des d'aquest dispositiu.",
+    "uploadCta": "Pujar la meva foto",
+    "reviewing": "En revisió",
+    "approved": "Publicada"
+  },
   "selector": {
     "title": "Tria escenari",
     "subtitle": "On ets ara mateix?",
@@ -59,6 +67,9 @@
     "legalAge": "Confirmo que soc major de 18 anys o tinc autorització.",
     "submit": "Enviar foto",
     "submitting": "Enviant…",
+    "readTerms": "Llegir termes i condicions",
+    "error": "No s'ha pogut pujar, torna-ho a provar.",
+    "hint": "Selecciona una foto i accepta les condicions per continuar.",
     "pendingNotice": "Foto rebuda. Quedarà pendent d'aprovació abans de publicar-se.",
     "stage": "Escenari: {stage}",
     "consentOk": "Consentiment registrat. Ja pots pujar les teves fotos!",
@@ -156,6 +167,10 @@
     "printingDesc": "Cua de còpies pagades per imprimir.",
     "tv": "TV en directe",
     "tvDesc": "Plantilles dinàmiques per a la pantalla del recinte.",
+    "revenue": "Ingressos",
+    "revenueDesc": "Vendes de descàrregues i impressions i comandes.",
+    "help": "Ajuda i suport",
+    "helpDesc": "Què fa cada part del web i contacte de suport.",
     "soon": "Properament",
     "openPanel": "Accés panell"
   },

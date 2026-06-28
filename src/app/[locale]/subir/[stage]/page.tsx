@@ -41,6 +41,9 @@ export default async function UploadPage({
           legalAge: t("legalAge"),
           submit: t("submit"),
           submitting: t("submitting"),
+          readTerms: t("readTerms"),
+          error: t("error"),
+          hint: t("hint"),
         }}
       />
     </main>

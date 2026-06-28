@@ -17,6 +17,9 @@ export interface UploadLabels extends UploaderLabels {
   legalAge: string;
   submit: string;
   submitting: string;
+  readTerms: string;
+  error: string;
+  hint: string;
 }
 
 export function UploadForm({
@@ -52,6 +55,18 @@ export function UploadForm({
       fd.append("comment", fields.comment);
       const res = await fetch("/api/photos", { method: "POST", body: fd });
       if (!res.ok) throw new Error("upload_failed");
+      const data = await res.json().catch(() => ({}));
+      // Guarda la foto en "mis fotos" (en el dispositivo) para volver a verla.
+      if (data?.id) {
+        try {
+          const key = "cf_my_photos";
+          const prev: string[] = JSON.parse(localStorage.getItem(key) ?? "[]");
+          if (!prev.includes(data.id)) prev.unshift(data.id);
+          localStorage.setItem(key, JSON.stringify(prev.slice(0, 200)));
+        } catch {
+          /* almacenamiento no disponible */
+        }
+      }
       router.push("/enviada");
     } catch {
       setError(true);
@@ -85,14 +100,12 @@ export function UploadForm({
           target="_blank"
           className="ml-9 mt-1 inline-block font-body text-[12px] text-accent underline underline-offset-2"
         >
-          Leer términos y condiciones
+          {labels.readTerms}
         </Link>
       </div>
 
       {error && (
-        <p className="text-center font-body text-[13px] text-danger">
-          No se pudo subir, inténtalo de nuevo.
-        </p>
+        <p className="text-center font-body text-[13px] text-danger">{labels.error}</p>
       )}
 
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[480px] bg-gradient-to-t from-ink via-ink/95 to-transparent px-5 pb-5 pt-8">
@@ -104,6 +117,9 @@ export function UploadForm({
         >
           {sending ? labels.submitting : labels.submit} <Rocket className="h-5 w-5" />
         </button>
+        {!canSubmit && !sending && (
+          <p className="mt-2 text-center font-body text-[12px] text-mist">{labels.hint}</p>
+        )}
       </div>
     </div>
   );

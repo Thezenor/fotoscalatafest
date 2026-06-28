@@ -12,6 +12,8 @@ import {
   CreditCard,
   Printer,
   Tv,
+  LineChart,
+  LifeBuoy,
   ArrowRight,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -46,10 +48,12 @@ export default async function SuperadminPage({
     { key: "templates", icon: LayoutTemplate, href: "/superadmin/plantillas", ready: true, external: false, badge: 0 },
     { key: "payments", icon: CreditCard, href: "/superadmin/pagos", ready: true, external: false, badge: 0 },
     { key: "tv", icon: Tv, href: "/superadmin/tv", ready: true, external: false, badge: 0 },
+    { key: "revenue", icon: LineChart, href: "/superadmin/ingresos", ready: true, external: false, badge: 0 },
     { key: "printing", icon: Printer, href: "/admin/impresion", ready: true, external: false, badge: printQueue },
     { key: "terms", icon: FileText, href: "/superadmin/terminos", ready: true, external: false, badge: 0 },
     { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true, badge: 0 },
     { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false, badge: 0 },
+    { key: "help", icon: LifeBuoy, href: "/superadmin/ayuda", ready: true, external: false, badge: 0 },
   ] as const;
 
   return (
