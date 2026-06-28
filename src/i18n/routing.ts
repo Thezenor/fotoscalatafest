@@ -9,7 +9,9 @@ export const routing = defineRouting({
   // ES base (completo) + EN + CA (preparados). Ver 07-I18N-LEGAL.md.
   locales: ["es", "en", "ca"],
   defaultLocale: "es",
-  localePrefix: "as-needed",
+  // "always": cada idioma lleva prefijo (/es, /en, /ca). Evita el bucle de
+  // redirección de "as-needed" detrás del proxy de Railway y da URLs deterministas.
+  localePrefix: "always",
 });
 
 export type Locale = (typeof routing.locales)[number];
