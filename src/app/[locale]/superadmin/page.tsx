@@ -27,11 +27,11 @@ export default async function SuperadminPage({
   const tAuth = await getTranslations("auth");
 
   const cards = [
-    { key: "moderation", icon: ImageIcon, href: "/admin", ready: true },
-    { key: "events", icon: CalendarDays, href: null, ready: false },
-    { key: "users", icon: Users, href: null, ready: false },
-    { key: "export", icon: Download, href: null, ready: false },
-    { key: "audit", icon: ScrollText, href: null, ready: false },
+    { key: "moderation", icon: ImageIcon, href: "/admin", ready: true, external: false },
+    { key: "events", icon: CalendarDays, href: "/superadmin/eventos", ready: true, external: false },
+    { key: "users", icon: Users, href: "/superadmin/usuarios", ready: true, external: false },
+    { key: "export", icon: Download, href: "/api/superadmin/export", ready: true, external: true },
+    { key: "audit", icon: ScrollText, href: "/superadmin/auditoria", ready: true, external: false },
   ] as const;
 
   return (
@@ -64,7 +64,7 @@ export default async function SuperadminPage({
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map(({ key, icon: Icon, href, ready }) => {
+        {cards.map(({ key, icon: Icon, href, ready, external }) => {
           const inner = (
             <div
               className={`flex h-full flex-col gap-3 rounded-[16px] border border-line bg-surface p-5 transition ${
@@ -85,12 +85,17 @@ export default async function SuperadminPage({
               </div>
             </div>
           );
-          return href ? (
+          if (external) {
+            return (
+              <a key={key} href={href} download>
+                {inner}
+              </a>
+            );
+          }
+          return (
             <Link key={key} href={href}>
               {inner}
             </Link>
-          ) : (
-            <div key={key}>{inner}</div>
           );
         })}
       </div>

@@ -59,6 +59,30 @@ export async function readObject(
   return { buffer, contentType };
 }
 
+/**
+ * Lee un objeto por su key, soportando tanto claves del storage como rutas de
+ * assets públicos (las que empiezan por "/", p.ej. los demo en /public). Útil
+ * para la exportación. Devuelve null si no se puede leer.
+ */
+export async function readAnyObject(
+  key: string,
+): Promise<{ buffer: Buffer; contentType: string } | null> {
+  try {
+    if (key.startsWith("/")) {
+      const target = path.join(process.cwd(), "public", key);
+      const buffer = await fs.readFile(target);
+      const ext = path.extname(key).slice(1).toLowerCase();
+      const contentType =
+        Object.entries(EXT_BY_MIME).find(([, e]) => e === ext)?.[0] ??
+        "application/octet-stream";
+      return { buffer, contentType };
+    }
+    return await readObject(key);
+  } catch {
+    return null;
+  }
+}
+
 /** URL pública para servir el objeto (ruta del route handler). */
 export function publicUrl(key: string | null | undefined): string | null {
   if (!key) return null;
