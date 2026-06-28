@@ -24,7 +24,7 @@ export function ActionBar({
   onSendToScreen: () => void;
   labels: ActionLabels;
 }) {
-  const btn = "flex h-10 flex-1 items-center justify-center rounded-xs transition active:scale-95";
+  const btn = "flex h-11 flex-1 items-center justify-center rounded-xs transition active:scale-95";
   return (
     <div className="flex gap-2">
       <button type="button" aria-label={labels.approve} onClick={onApprove} className={cn(btn, "bg-success text-success-ink")}>

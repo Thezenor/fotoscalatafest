@@ -22,6 +22,7 @@ export async function enqueuePhotoProcessing(photoId: string): Promise<boolean> 
       "process",
       { photoId },
       {
+        jobId: photoId, // dedupe: un solo job por foto
         attempts: 3,
         backoff: { type: "exponential", delay: 3000 },
         removeOnComplete: true,

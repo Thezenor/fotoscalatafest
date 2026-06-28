@@ -66,17 +66,38 @@ export async function createCheckout(input: CheckoutInput): Promise<{ url: strin
   return { url: approve.href, externalId: order.id };
 }
 
-/** Verifica/captura el pago en el retorno. Devuelve true si está pagado. */
-export async function verifyPayment(provider: "stripe" | "paypal", externalId: string): Promise<boolean> {
+export interface VerifyOrder {
+  id: string;
+  externalId: string | null;
+  amountCents: number;
+  currency: string;
+}
+
+/**
+ * Verifica/captura el pago en el retorno, validando importe, moneda y orderId
+ * contra el pedido local. Idempotente (PayPal: comprueba estado antes de capturar).
+ * Devuelve true solo si el pago coincide exactamente con el pedido.
+ */
+export async function verifyPayment(provider: "stripe" | "paypal", order: VerifyOrder): Promise<boolean> {
   const pay = await getPayments();
+  if (!order.externalId) return false;
+
   if (provider === "stripe") {
     if (!pay.stripeSecretKey) return false;
-    const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${externalId}`, {
+    const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${order.externalId}`, {
       headers: { Authorization: `Bearer ${pay.stripeSecretKey}` },
     });
-    const data = await res.json();
-    return res.ok && data.payment_status === "paid";
+    const d = await res.json();
+    if (!res.ok) return false;
+    return (
+      d.payment_status === "paid" &&
+      d.amount_total === order.amountCents &&
+      String(d.currency).toLowerCase() === order.currency.toLowerCase() &&
+      d.metadata?.orderId === order.id
+    );
   }
+
+  // PayPal: primero consultar estado (evita recapturar; idempotente).
   if (!pay.paypalClientId || !pay.paypalSecret) return false;
   const base = pay.paypalMode === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
   const auth = Buffer.from(`${pay.paypalClientId}:${pay.paypalSecret}`).toString("base64");
@@ -86,12 +107,29 @@ export async function verifyPayment(provider: "stripe" | "paypal", externalId: s
     body: "grant_type=client_credentials",
   });
   const tok = await tokRes.json();
-  const capRes = await fetch(`${base}/v2/checkout/orders/${externalId}/capture`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${tok.access_token}`, "Content-Type": "application/json" },
-  });
-  const cap = await capRes.json();
-  return capRes.ok && cap.status === "COMPLETED";
+  if (!tokRes.ok) return false;
+  const headers = { Authorization: `Bearer ${tok.access_token}`, "Content-Type": "application/json" };
+
+  const getRes = await fetch(`${base}/v2/checkout/orders/${order.externalId}`, { headers });
+  const got = await getRes.json();
+  if (!getRes.ok) return false;
+
+  let final = got;
+  if (got.status === "APPROVED") {
+    const capRes = await fetch(`${base}/v2/checkout/orders/${order.externalId}/capture`, { method: "POST", headers });
+    final = await capRes.json();
+    if (!capRes.ok) return false;
+  }
+  if (final.status !== "COMPLETED") return false;
+
+  const pu = final.purchase_units?.[0];
+  const amt = pu?.amount ?? pu?.payments?.captures?.[0]?.amount;
+  return (
+    !!amt &&
+    amt.value === (order.amountCents / 100).toFixed(2) &&
+    String(amt.currency_code).toUpperCase() === order.currency.toUpperCase() &&
+    pu?.custom_id === order.id
+  );
 }
 
 /** ¿Hay alguna pasarela lista? */

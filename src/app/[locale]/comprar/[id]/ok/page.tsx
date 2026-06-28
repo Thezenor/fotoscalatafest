@@ -27,7 +27,12 @@ export default async function CheckoutOkPage({
 
   let paid = order.status === "PAID";
   if (!paid && order.externalId && (provider === "stripe" || provider === "paypal")) {
-    paid = await verifyPayment(provider, order.externalId);
+    paid = await verifyPayment(provider, {
+      id: order.id,
+      externalId: order.externalId,
+      amountCents: order.amountCents,
+      currency: order.currency,
+    });
     if (paid) {
       await prisma.printOrder.update({ where: { id: order.id }, data: { status: "PAID", paidAt: new Date() } });
       await logAudit({ action: "PRINT_PAID", entityType: "PrintOrder", entityId: order.id, metadata: { kind: order.kind, provider } });
@@ -45,7 +50,7 @@ export default async function CheckoutOkPage({
           {order.kind === "download" ? (
             <>
               <p className="font-body text-mist">Tu foto en alta calidad está lista.</p>
-              <a href={`/api/photos/${id}/treated?mode=download`} target="_blank" rel="noopener noreferrer" className={buttonClass({ className: "uppercase" })}>
+              <a href={`/api/photos/${id}/treated?mode=download&order=${order.id}`} target="_blank" rel="noopener noreferrer" className={buttonClass({ className: "uppercase" })}>
                 <Download className="h-5 w-5" /> Descargar foto
               </a>
             </>
@@ -53,7 +58,7 @@ export default async function CheckoutOkPage({
             <>
               <p className="font-body text-mist">Muestra este código en el punto de impresión:</p>
               <p className="font-display text-4xl font-bold text-brand">#{code}</p>
-              <a href={`/api/photos/${id}/treated?mode=print`} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: "secondary", size: "md", className: "uppercase" })}>
+              <a href={`/api/photos/${id}/treated?mode=print&order=${order.id}`} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: "secondary", size: "md", className: "uppercase" })}>
                 Ver copia
               </a>
             </>

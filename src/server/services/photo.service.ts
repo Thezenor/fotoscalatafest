@@ -11,11 +11,15 @@ type DbPhotoWithStage = DbPhoto & { stage: Stage | null };
 function toDTO(p: DbPhotoWithStage): PhotoDTO {
   const status: PhotoDTO["status"] =
     p.status === "APPROVED" ? "approved" : p.status === "REJECTED" ? "rejected" : "pending";
-  const url = publicUrl(p.watermarkedKey ?? p.originalKey) ?? "";
+  // Nunca exponer el ORIGINAL real (sin marca/alta calidad) en superficies
+  // públicas: solo derivados (watermarked/thumbnail). Las fotos demo usan rutas
+  // "/demo/..." públicas y sí pueden servirse directamente.
+  const demoOriginal = p.originalKey.startsWith("/") ? publicUrl(p.originalKey) : null;
+  const url = publicUrl(p.watermarkedKey) ?? publicUrl(p.thumbnailKey) ?? demoOriginal ?? "";
   return {
     id: p.id,
     url,
-    thumbUrl: publicUrl(p.thumbnailKey ?? p.originalKey) ?? url,
+    thumbUrl: publicUrl(p.thumbnailKey) ?? publicUrl(p.watermarkedKey) ?? demoOriginal ?? url,
     width: p.width ?? 900,
     height: p.height ?? 600,
     stageId: p.stage?.slug ?? "",
@@ -120,11 +124,17 @@ export async function listForModeration(opts?: {
 }) {
   const event = await getActiveEvent();
   if (!event) return [];
-  const status = opts?.status && MOD_STATUS[opts.status] ? MOD_STATUS[opts.status] : undefined;
+  // "pending" agrupa lo que requiere revisión humana: PENDING + estados de IA.
+  const statusWhere =
+    opts?.status === "pending"
+      ? { status: { in: ["PENDING", "AI_APPROVED", "AI_FLAGGED"] as PhotoStatus[] } }
+      : opts?.status && MOD_STATUS[opts.status]
+        ? { status: MOD_STATUS[opts.status] }
+        : {};
   const rows = await prisma.photo.findMany({
     where: {
       eventId: event.id,
-      ...(status ? { status } : {}),
+      ...statusWhere,
       ...(opts?.day === "VIE" || opts?.day === "SÁB" ? { day: opts.day } : {}),
       ...(opts?.stageSlug ? { stage: { slug: opts.stageSlug } } : {}),
     },

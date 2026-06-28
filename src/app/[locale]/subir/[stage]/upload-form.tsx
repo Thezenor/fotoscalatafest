@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Rocket } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Uploader, type UploaderLabels } from "@/components/content/Uploader";
 import { Input, Textarea } from "@/components/ui/Input";
 import { LegalCheckbox } from "@/components/ui/LegalCheckbox";
@@ -80,6 +80,13 @@ export function UploadForm({
         <LegalCheckbox checked={age} onChange={setAge}>
           {labels.legalAge}
         </LegalCheckbox>
+        <Link
+          href="/legal/terms"
+          target="_blank"
+          className="ml-9 mt-1 inline-block font-body text-[12px] text-accent underline underline-offset-2"
+        >
+          Leer términos y condiciones
+        </Link>
       </div>
 
       {error && (

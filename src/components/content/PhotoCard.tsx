@@ -40,11 +40,12 @@ export function PhotoCard({
         </span>
       </button>
 
-      <div className="absolute right-2 top-2 flex gap-1.5 opacity-0 transition group-hover:opacity-100">
+      {/* Visibles en táctil (móvil); en escritorio aparecen al pasar el ratón. */}
+      <div className="absolute right-2 top-2 flex gap-1.5 opacity-100 transition lg:opacity-0 lg:group-hover:opacity-100">
         <button
           type="button"
           onClick={() => onShare?.(photo)}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur"
           aria-label="share"
         >
           <Share2 className="h-4 w-4" />
@@ -52,7 +53,7 @@ export function PhotoCard({
         <button
           type="button"
           onClick={() => onDownload?.(photo)}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur"
           aria-label="download"
         >
           <Download className="h-4 w-4" />

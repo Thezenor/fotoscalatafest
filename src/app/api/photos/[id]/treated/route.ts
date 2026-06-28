@@ -19,10 +19,15 @@ export async function GET(
   const cfg = await getPrintConfig();
   const saleOn = mode === "download" ? cfg.downloadEnabled : cfg.printEnabled;
   if (saleOn) {
-    const paid = await prisma.printOrder.findFirst({
-      where: { photoId: id, kind: mode, status: "PAID" },
-      select: { id: true },
-    });
+    // Gate por-comprador: exige el id de SU pedido pagado (no basta con que
+    // exista cualquier pedido pagado de la foto). El id es un cuid no enumerable.
+    const orderId = req.nextUrl.searchParams.get("order");
+    const paid = orderId
+      ? await prisma.printOrder.findFirst({
+          where: { id: orderId, photoId: id, kind: mode, status: "PAID" },
+          select: { id: true },
+        })
+      : null;
     if (!paid) {
       return NextResponse.json({ error: "payment_required" }, { status: 402 });
     }

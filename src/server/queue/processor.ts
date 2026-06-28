@@ -15,6 +15,9 @@ export async function processPhoto(photoId: string): Promise<void> {
     include: { event: true },
   });
   if (!photo) return;
+  // Idempotencia: si ya se generó la miniatura, no reprocesar (evita doble
+  // trabajo si coinciden worker + fallback inline).
+  if (photo.thumbnailKey) return;
 
   // Miniatura + marca de agua (no bloquea si falla; se conserva el original).
   try {

@@ -97,7 +97,7 @@ export async function getModerationStats(eventId: string) {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const [pending, approved, uploadedToday, onScreen] = await Promise.all([
-    prisma.photo.count({ where: { eventId, status: "PENDING" } }),
+    prisma.photo.count({ where: { eventId, status: { in: ["PENDING", "AI_APPROVED", "AI_FLAGGED"] } } }),
     prisma.photo.count({ where: { eventId, status: "APPROVED" } }),
     prisma.photo.count({ where: { eventId, createdAt: { gte: startOfDay } } }),
     prisma.photo.count({ where: { eventId, status: "APPROVED", onScreen: true } }),
