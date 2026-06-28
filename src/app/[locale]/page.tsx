@@ -53,7 +53,7 @@ export default async function LandingPage({
       <SiteNav floating />
 
       {/* HERO */}
-      <section className="relative min-h-[560px] overflow-hidden lg:min-h-[82vh]">
+      <section className="relative min-h-[480px] overflow-hidden lg:min-h-[62vh]">
         <Image src="/demo/p10.png" alt="" fill priority sizes="100vw" className="object-cover" />
         <div className="overlay-vert absolute inset-0" />
         <div className="absolute inset-0 hidden bg-gradient-to-r from-ink/80 via-ink/20 to-transparent lg:block" />
@@ -81,7 +81,7 @@ export default async function LandingPage({
 
         {/* Copy */}
         <div className="absolute inset-x-0 bottom-0">
-          <div className="mx-auto max-w-7xl px-[22px] pb-8 lg:px-8 lg:pb-16">
+          <div className="mx-auto max-w-7xl px-[22px] pb-6 lg:px-8 lg:pb-10">
             <div className="flex max-w-xl flex-col gap-3 lg:gap-5">
               <Eyebrow>{t("eyebrow")}</Eyebrow>
               <h1 className="font-display text-[46px] font-bold uppercase leading-[0.92] text-white lg:text-7xl">
@@ -107,8 +107,8 @@ export default async function LandingPage({
       </section>
 
       {/* ELIGE TU ESCENARIO */}
-      <section className="mx-auto max-w-7xl px-[22px] py-10 lg:px-8 lg:py-16">
-        <div className="mb-6 flex items-end justify-between">
+      <section className="mx-auto max-w-7xl px-[22px] pb-10 pt-7 lg:px-8 lg:pb-16 lg:pt-9">
+        <div className="mb-5 flex items-end justify-between">
           <div>
             <h2 className="font-display text-[24px] font-bold uppercase text-white lg:text-4xl">
               {t("chooseStage")}
