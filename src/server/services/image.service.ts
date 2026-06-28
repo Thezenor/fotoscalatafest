@@ -179,8 +179,14 @@ export async function makeWatermarked(
 ): Promise<{ buffer: Buffer; mime: string } | null> {
   if (!opts.enabled) return null;
 
-  const base = sharp(input).rotate();
-  const meta = await base.metadata();
+  // Versión de DISPLAY (pública): se reduce a máx 2048px y calidad media. Es de
+  // sobra para móvil, escritorio y la pantalla Live, pero NO es calidad de
+  // impresión: la máxima calidad solo se entrega en la descarga de pago (treated).
+  const resized = await sharp(input)
+    .rotate()
+    .resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true })
+    .toBuffer();
+  const meta = await sharp(resized).metadata();
   const w = meta.width ?? 1200;
   const h = meta.height ?? 800;
   const opacity = Math.min(1, Math.max(0.1, opts.opacity ?? 0.5));
@@ -188,9 +194,9 @@ export async function makeWatermarked(
   const gravity = GRAVITY[position] ?? "southeast";
 
   const overlay = watermarkSvg(w, h, opacity);
-  const buffer = await base
+  const buffer = await sharp(resized)
     .composite([{ input: overlay, gravity }])
-    .jpeg({ quality: 88 })
+    .jpeg({ quality: 82 })
     .toBuffer();
   return { buffer, mime: "image/jpeg" };
 }
