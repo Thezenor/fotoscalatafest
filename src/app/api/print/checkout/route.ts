@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
   const provider = body.provider === "paypal" ? "paypal" : "stripe";
   const locale = String(body.locale ?? "es");
 
-  const photo = await prisma.photo.findUnique({ where: { id: photoId }, select: { id: true } });
+  // Solo se puede comprar/imprimir una foto aprobada.
+  const photo = await prisma.photo.findFirst({ where: { id: photoId, status: "APPROVED" }, select: { id: true } });
   if (!photo) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
   const cfg = await getPrintConfig();

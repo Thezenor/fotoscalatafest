@@ -6,6 +6,7 @@ type Size = "lg" | "md" | "sm";
 const base =
   "inline-flex items-center justify-center gap-2 rounded-pill font-display font-bold " +
   "transition duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-ink " +
   "disabled:opacity-45 disabled:pointer-events-none select-none";
 
 const variants: Record<Variant, string> = {

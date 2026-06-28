@@ -45,7 +45,8 @@ async function brandLogoBuffer(): Promise<Buffer | null> {
  * - mode "print": además número + QR identificador integrados (impresión en sitio).
  */
 export async function generateTreated(photoId: string, mode: "download" | "print") {
-  const photo = await prisma.photo.findUnique({ where: { id: photoId } });
+  // Nunca tratar/servir el original de una foto no aprobada (salta la moderación).
+  const photo = await prisma.photo.findFirst({ where: { id: photoId, status: "APPROVED" } });
   if (!photo) return null;
 
   const obj = await readAnyObject(photo.originalKey);

@@ -12,9 +12,33 @@ import { LangSwitcher } from "@/components/content/LangSwitcher";
 import { SiteNav } from "@/components/content/SiteNav";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { listStages, getActiveEvent } from "@/server/services/photo.service";
-import { siteUrl, absoluteUrl } from "@/lib/seo";
+import { siteUrl, absoluteUrl, localizedAlternates } from "@/lib/seo";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "landing" });
+  const title = "Fotos del Calatafest 2026 · Calatayud (3–4 julio)";
+  const description = t("subtitle");
+  return {
+    title,
+    description,
+    alternates: localizedAlternates(locale, "/"),
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: `${siteUrl()}/${locale}`,
+      images: [{ url: absoluteUrl("/demo/p10.png"), width: 900, height: 600, alt: title }],
+    },
+  };
+}
 
 export default async function LandingPage({
   params,

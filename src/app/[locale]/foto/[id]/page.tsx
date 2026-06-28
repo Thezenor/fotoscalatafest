@@ -71,6 +71,9 @@ export default async function PhotoPage({
     <main className="w-full flex-1">
       <JsonLd data={jsonLd} />
       <SiteNav />
+      <h1 className="sr-only">
+        {(photo.author?.name ?? photo.author?.instagram ?? photo.stageName)} — {photo.stageName} · {dayLabel(photo.day, locale)} · Calatafest 2026
+      </h1>
 
       {/* Cabecera móvil */}
       <header className="flex items-center justify-between px-5 py-4 lg:hidden">

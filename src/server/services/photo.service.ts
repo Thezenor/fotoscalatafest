@@ -83,7 +83,8 @@ export async function listApprovedPhotos(opts?: {
     ...(opts?.limit ? { take: opts.limit } : {}),
     ...(opts?.offset ? { skip: opts.offset } : {}),
   });
-  return rows.map(toDTO);
+  const free = event.downloadMode === "free";
+  return rows.map((r) => ({ ...toDTO(r), downloadFree: free }));
 }
 
 export async function listFeaturedPhotos() {
@@ -94,7 +95,8 @@ export async function listFeaturedPhotos() {
     include: { stage: true },
     orderBy: { createdAt: "desc" },
   });
-  return rows.map(toDTO);
+  const free = event.downloadMode === "free";
+  return rows.map((r) => ({ ...toDTO(r), downloadFree: free }));
 }
 
 export async function listOnScreenPhotos() {
@@ -105,12 +107,14 @@ export async function listOnScreenPhotos() {
     include: { stage: true },
     orderBy: { createdAt: "desc" },
   });
-  return rows.map(toDTO);
+  const free = event.downloadMode === "free";
+  return rows.map((r) => ({ ...toDTO(r), downloadFree: free }));
 }
 
 export async function getPublicPhoto(id: string) {
-  const row = await prisma.photo.findUnique({
-    where: { id },
+  // Solo se exponen públicamente fotos APPROVED (regla de oro 7).
+  const row = await prisma.photo.findFirst({
+    where: { id, status: "APPROVED" },
     include: { stage: true, event: { select: { downloadMode: true } } },
   });
   return row ? toDTO(row) : null;

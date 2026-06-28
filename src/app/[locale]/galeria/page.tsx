@@ -55,6 +55,8 @@ export default async function GalleryPage({
   return (
     <main className="w-full flex-1">
       <SiteNav />
+      {/* h1 accesible en móvil (en escritorio hay un h1 visible más abajo) */}
+      <h1 className="sr-only lg:hidden">{t("title")}</h1>
 
       {/* Cabecera móvil */}
       <header className="flex items-center justify-between px-5 py-4 lg:hidden">

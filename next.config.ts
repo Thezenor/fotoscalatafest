@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
   images: {
     // Configurar aquí el dominio del storage cuando se sirva por CDN.
     remotePatterns: [],
+    // Sirve AVIF/WebP (mucho más ligeros) y cachea los derivados un año:
+    // clave para la red saturada del recinto.
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 31536000,
+    deviceSizes: [360, 480, 640, 750, 828, 1080, 1280, 1920],
+    imageSizes: [96, 160, 240, 320, 480],
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

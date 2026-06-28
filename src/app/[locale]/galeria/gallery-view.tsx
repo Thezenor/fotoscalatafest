@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { buttonClass } from "@/components/ui/Button";
 import { FeaturedCarousel } from "@/components/content/FeaturedCarousel";
 import { FilterChips, type ChipOption } from "@/components/content/FilterChips";
 import { PhotoCard } from "@/components/content/PhotoCard";
@@ -31,6 +33,8 @@ export function GalleryView({
   emptyLabel: string;
 }) {
   const locale = useLocale();
+  const router = useRouter();
+  const tc = useTranslations("common");
   const [filter, setFilter] = useState("all");
   const [photos, setPhotos] = useState<Photo[]>(initial);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -98,7 +102,12 @@ export function GalleryView({
       </div>
 
       {photos.length === 0 && !loading ? (
-        <p className="px-5 py-10 text-center font-body text-sm text-mist">{emptyLabel}</p>
+        <div className="flex flex-col items-center gap-4 px-5 py-12 text-center">
+          <p className="font-body text-sm text-mist">{emptyLabel}</p>
+          <Link href="/escenarios" className={buttonClass({ size: "sm", className: "uppercase" })}>
+            {tc("uploadPhoto")}
+          </Link>
+        </div>
       ) : (
         <div className="columns-2 gap-2.5 px-5 pb-4 md:columns-3 lg:columns-4 lg:px-8">
           {photos.map((p) => (
@@ -106,7 +115,20 @@ export function GalleryView({
               key={p.id}
               photo={p}
               label={`${p.stageName.replace("Escenario ", "")} · ${p.day}`}
-              onDownload={(ph) => window.open(ph.url, "_blank")}
+              onDownload={(ph) => {
+                // Gratis: descarga directa de la imagen mostrada.
+                // De pago: lleva a la ficha para conseguir/imprimir la alta calidad.
+                if (ph.downloadFree) {
+                  const a = document.createElement("a");
+                  a.href = ph.url;
+                  a.download = `calatafest-${ph.printCode ?? ph.id}.jpg`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                } else {
+                  router.push(`/foto/${ph.id}`);
+                }
+              }}
               onShare={async (ph) => {
                 const url = `${window.location.origin}/${locale}/foto/${ph.id}`;
                 if (navigator.share) await navigator.share({ url }).catch(() => {});
@@ -121,7 +143,7 @@ export function GalleryView({
       <div ref={sentinel} className="h-10" />
       {loading && (
         <p className="pb-8 text-center font-mono text-xs uppercase tracking-wide text-mist">
-          Cargando…
+          {tc("loading")}
         </p>
       )}
     </div>
