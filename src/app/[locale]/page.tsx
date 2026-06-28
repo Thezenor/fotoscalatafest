@@ -107,25 +107,31 @@ export default async function LandingPage({
       </section>
 
       {/* ELIGE TU ESCENARIO */}
-      <section className="mx-auto max-w-7xl px-[22px] py-8 lg:px-8 lg:py-14">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-display text-[22px] font-bold uppercase text-white lg:text-3xl">
-            {t("chooseStage")}
-          </h2>
-          <Link href="/escenarios" className="font-body text-[13px] text-brand lg:text-base">
+      <section className="mx-auto max-w-7xl px-[22px] py-10 lg:px-8 lg:py-16">
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <h2 className="font-display text-[24px] font-bold uppercase text-white lg:text-4xl">
+              {t("chooseStage")}
+            </h2>
+            <p className="mt-1 font-body text-[14px] text-mist lg:text-base">{t("chooseStageHint")}</p>
+          </div>
+          <Link
+            href="/escenarios"
+            className="shrink-0 font-body text-[13px] font-semibold text-brand hover:underline lg:text-base"
+          >
             {t("seeAll")} →
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {stages.map((s) => (
             <StageCard
               key={s.id}
-              size="sm"
               image={s.bannerUrl ?? "/demo/p01.png"}
               name={s.name}
-              sub={`${s.sub ?? ""} · ${s.dayLabel ?? ""}`}
+              sub={s.sub ?? ""}
               day={s.dayLabel ?? ""}
               href={`/subir/${s.slug}`}
+              cta={tc("uploadShort")}
             />
           ))}
         </div>

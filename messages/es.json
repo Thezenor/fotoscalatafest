@@ -2,6 +2,7 @@
   "common": {
     "appName": "Calatafest Fotos",
     "uploadPhoto": "Subir mi foto",
+    "uploadShort": "Subir foto",
     "viewGallery": "Ver galería",
     "share": "Compartir",
     "download": "Descargar",
@@ -18,6 +19,7 @@
     "subtitle": "Escanea, sube tu foto y revive la noche. Las mejores se proyectan en las pantallas del recinto.",
     "marquee": "Calatafest Fotos · 3—4 Julio 2026 · Sube tus fotos del festival ·",
     "chooseStage": "Elige tu escenario",
+    "chooseStageHint": "Toca tu escenario para subir tus fotos de esa zona.",
     "seeAll": "Ver todos",
     "sponsors": "Con el apoyo de"
   },
