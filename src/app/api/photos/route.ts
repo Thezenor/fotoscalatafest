@@ -3,6 +3,7 @@ import sharp from "sharp";
 import { listApprovedPhotos, createUploadedPhoto, getActiveEvent } from "@/server/services/photo.service";
 import { createConsent } from "@/server/services/consent.service";
 import { saveObject } from "@/server/services/storage.service";
+import { makeThumbnail, makeWatermarked } from "@/server/services/image.service";
 
 export const runtime = "nodejs";
 
@@ -53,6 +54,23 @@ export async function POST(req: NextRequest) {
   const clean = await img.toBuffer();
   const originalKey = await saveObject(clean, file.type);
 
+  // Miniatura (galería) + versión con marca de agua (pública), según config del evento.
+  let thumbnailKey: string | null = null;
+  let watermarkedKey: string | null = null;
+  try {
+    const thumb = await makeThumbnail(clean);
+    thumbnailKey = await saveObject(thumb.buffer, thumb.mime);
+    const wm = await makeWatermarked(clean, {
+      enabled: event.watermarkEnabled,
+      position: event.watermarkPosition,
+      opacity: event.watermarkOpacity,
+    });
+    if (wm) watermarkedKey = await saveObject(wm.buffer, wm.mime);
+  } catch (err) {
+    console.error("[upload] fallo procesando imagen (thumb/watermark)", err);
+    // No bloquea la subida: se conserva el original.
+  }
+
   // Registro de consentimiento legal.
   const consent = await createConsent({
     eventId: event.id,
@@ -65,6 +83,8 @@ export async function POST(req: NextRequest) {
   const photo = await createUploadedPhoto({
     stageSlug,
     originalKey,
+    thumbnailKey,
+    watermarkedKey,
     mimeType: file.type,
     width: meta.width,
     height: meta.height,

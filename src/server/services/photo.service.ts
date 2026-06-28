@@ -153,6 +153,8 @@ export async function moderatePhoto(
 export async function createUploadedPhoto(input: {
   stageSlug: string;
   originalKey: string;
+  thumbnailKey?: string | null;
+  watermarkedKey?: string | null;
   mimeType: string;
   width?: number;
   height?: number;
@@ -174,6 +176,8 @@ export async function createUploadedPhoto(input: {
       stageId: stage?.id ?? null,
       status: "PENDING",
       originalKey: input.originalKey,
+      thumbnailKey: input.thumbnailKey ?? null,
+      watermarkedKey: input.watermarkedKey ?? null,
       mimeType: input.mimeType,
       width: input.width ?? null,
       height: input.height ?? null,
