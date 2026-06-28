@@ -16,7 +16,11 @@
   "event": {
     "chooseStage": "Elige el escenario donde estás",
     "uploadCta": "Sube tu foto",
-    "galleryCta": "Ver galería"
+    "galleryCta": "Ver galería",
+    "accessDenied": "Acceso no válido. Escanea el QR oficial del evento para entrar.",
+    "scanToAccess": "Escanea el QR del evento para acceder.",
+    "inactive": "Este evento no está disponible en este momento.",
+    "noStages": "Aún no hay escenarios configurados."
   },
   "consent": {
     "title": "Antes de subir tu foto",
@@ -30,7 +34,10 @@
     "title": "Sube tu foto",
     "selectFile": "Seleccionar foto",
     "uploading": "Subiendo…",
-    "pendingNotice": "Foto recibida. Quedará pendiente de aprobación antes de publicarse."
+    "pendingNotice": "Foto recibida. Quedará pendiente de aprobación antes de publicarse.",
+    "stage": "Escenario: {stage}",
+    "consentOk": "Consentimiento registrado. ¡Ya puedes subir tus fotos!",
+    "comingSoon": "La subida de fotos se activa en la Fase 3."
   },
   "gallery": {
     "title": "Galería",

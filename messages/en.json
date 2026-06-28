@@ -16,7 +16,11 @@
   "event": {
     "chooseStage": "Choose the stage you're at",
     "uploadCta": "Upload your photo",
-    "galleryCta": "View gallery"
+    "galleryCta": "View gallery",
+    "accessDenied": "Invalid access. Scan the official event QR code to enter.",
+    "scanToAccess": "Scan the event QR code to get access.",
+    "inactive": "This event is not available right now.",
+    "noStages": "No stages configured yet."
   },
   "consent": {
     "title": "Before uploading your photo",
@@ -30,7 +34,10 @@
     "title": "Upload your photo",
     "selectFile": "Select photo",
     "uploading": "Uploading…",
-    "pendingNotice": "Photo received. It will remain pending approval before being published."
+    "pendingNotice": "Photo received. It will remain pending approval before being published.",
+    "stage": "Stage: {stage}",
+    "consentOk": "Consent recorded. You can now upload your photos!",
+    "comingSoon": "Photo upload will be enabled in Phase 3."
   },
   "gallery": {
     "title": "Gallery",
