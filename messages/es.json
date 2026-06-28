@@ -39,5 +39,20 @@
   "legal": {
     "termsTitle": "Términos y condiciones",
     "privacyTitle": "Política de privacidad"
+  },
+  "auth": {
+    "loginTitle": "Acceso al panel",
+    "loginSubtitle": "Solo personal autorizado.",
+    "email": "Email",
+    "password": "Contraseña",
+    "signIn": "Entrar",
+    "signOut": "Cerrar sesión",
+    "invalid": "Credenciales incorrectas.",
+    "error": "No se pudo iniciar sesión. Inténtalo de nuevo."
+  },
+  "admin": {
+    "title": "Panel de moderación",
+    "welcome": "Bienvenido/a, {name}",
+    "role": "Rol: {role}"
   }
 }

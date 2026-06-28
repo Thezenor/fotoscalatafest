@@ -41,6 +41,7 @@ yarn-error.log*
 gcp-vision.json
 /data/
 /uploads/
+/.certs/
 
 # Material audiovisual de marca (pesado, fuera de git)
 /Nueva carpeta/

@@ -39,5 +39,20 @@
   "legal": {
     "termsTitle": "Terms and conditions",
     "privacyTitle": "Privacy policy"
+  },
+  "auth": {
+    "loginTitle": "Panel access",
+    "loginSubtitle": "Authorized staff only.",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "invalid": "Invalid credentials.",
+    "error": "Could not sign in. Please try again."
+  },
+  "admin": {
+    "title": "Moderation panel",
+    "welcome": "Welcome, {name}",
+    "role": "Role: {role}"
   }
 }
