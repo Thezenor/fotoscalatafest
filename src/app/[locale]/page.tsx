@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Camera } from "lucide-react";
+import { Camera, Lock } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { buttonClass } from "@/components/ui/Button";
@@ -23,6 +23,7 @@ export default async function LandingPage({
   setRequestLocale(locale);
   const t = await getTranslations("landing");
   const tc = await getTranslations("common");
+  const ts = await getTranslations("superadmin");
   const stages = await listStages();
 
   return (
@@ -99,9 +100,15 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* PATROCINADORES */}
-      <section className="border-t border-surface-2 px-[22px] py-8 lg:py-12">
+      {/* PATROCINADORES + acceso al panel */}
+      <section className="flex flex-col items-center gap-6 border-t border-surface-2 px-[22px] py-8 lg:py-12">
         <SponsorStrip title={t("sponsors")} />
+        <Link
+          href="/superadmin"
+          className="inline-flex items-center gap-2 rounded-pill border border-line px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-wide text-mist transition hover:border-brand hover:text-brand"
+        >
+          <Lock className="h-3.5 w-3.5" /> {ts("openPanel")}
+        </Link>
       </section>
     </main>
   );

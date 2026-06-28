@@ -106,6 +106,22 @@
     "role": "Rol: {role}",
     "title": "Panell de moderació"
   },
+  "superadmin": {
+    "title": "Panell de superadmin",
+    "welcome": "Hola, {name}",
+    "moderation": "Moderació de fotos",
+    "moderationDesc": "Aprovar, rebutjar, destacar i enviar a pantalla.",
+    "events": "Esdeveniments",
+    "eventsDesc": "Crear i configurar esdeveniments, QR d'accés i marca d'aigua.",
+    "users": "Usuaris i rols",
+    "usersDesc": "Altes/baixes d'admins i moderadors.",
+    "export": "Exportació",
+    "exportDesc": "Descarregar totes les fotos aprovades + metadades.",
+    "audit": "Auditoria",
+    "auditDesc": "Registre de totes les accions del sistema.",
+    "soon": "Properament",
+    "openPanel": "Accés panell"
+  },
   "auth": {
     "loginTitle": "Accés al panell",
     "loginSubtitle": "Només personal autoritzat.",

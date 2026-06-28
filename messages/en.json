@@ -106,6 +106,22 @@
     "role": "Role: {role}",
     "title": "Moderation panel"
   },
+  "superadmin": {
+    "title": "Superadmin panel",
+    "welcome": "Hi, {name}",
+    "moderation": "Photo moderation",
+    "moderationDesc": "Approve, reject, feature and send to screen.",
+    "events": "Events",
+    "eventsDesc": "Create and configure events, access QR and watermark.",
+    "users": "Users & roles",
+    "usersDesc": "Manage admins and moderators.",
+    "export": "Export",
+    "exportDesc": "Download all approved photos + metadata.",
+    "audit": "Audit log",
+    "auditDesc": "Record of every system action.",
+    "soon": "Coming soon",
+    "openPanel": "Panel access"
+  },
   "auth": {
     "loginTitle": "Panel access",
     "loginSubtitle": "Authorized staff only.",
