@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ArrowLeft, Printer, Search } from "lucide-react";
 import { setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { requireRole } from "@/server/auth/guards";
 import { listPrintQueue, listPrintFulfilled, findPrintByCode } from "@/server/services/admin.service";
 import { Badge } from "@/components/ui/Badge";
@@ -9,10 +9,6 @@ import { buttonClass } from "@/components/ui/Button";
 import { FulfillButton } from "./fulfill-button";
 
 export const dynamic = "force-dynamic";
-
-function treatedUrl(photoId: string, orderId: string) {
-  return `/api/photos/${photoId}/treated?mode=print&order=${orderId}`;
-}
 
 export default async function PrintStationPage({
   params,
@@ -31,6 +27,11 @@ export default async function PrintStationPage({
     listPrintFulfilled(20),
     code ? findPrintByCode(code) : Promise.resolve(null),
   ]);
+
+  // Atajo: si la búsqueda encuentra una copia pagada, ir directo a imprimir.
+  if (found && found.order.status === "PAID") {
+    redirect({ href: `/admin/impresion/imprimir/${found.order.id}`, locale });
+  }
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 px-5 py-6 lg:px-8">
@@ -136,9 +137,9 @@ function PrintItem({
         {status === "FULFILLED" && <Badge tone="success">Impresa</Badge>}
       </div>
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-        <a href={treatedUrl(photoId, orderId)} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: "secondary", size: "sm", className: "uppercase" })}>
-          <Printer className="h-4 w-4" /> Abrir copia
-        </a>
+        <Link href={`/admin/impresion/imprimir/${orderId}`} className={buttonClass({ size: "sm", className: "uppercase" })}>
+          <Printer className="h-4 w-4" /> Imprimir
+        </Link>
         {status === "PAID" && <FulfillButton orderId={orderId} />}
       </div>
     </div>

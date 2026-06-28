@@ -37,12 +37,17 @@ export function ModerationCard({
     <div className="overflow-hidden rounded-[16px] border border-line bg-surface">
       <div className="relative h-[150px]">
         <Image src={photo.url} alt={photo.stageName} fill sizes="320px" className="object-cover" />
-        <div className="absolute left-2 top-2 flex gap-1.5">
+        <div className="absolute left-2 top-2 flex flex-wrap gap-1.5">
           <StatusBadge status={photo.status} featured={photo.featured} labels={labels} />
           {photo.aiVerdict && AI_FLAG.has(photo.aiVerdict) && (
             <Badge tone="danger">IA: {photo.aiVerdict}</Badge>
           )}
         </div>
+        {photo.printCode && (
+          <span className="absolute right-2 top-2 rounded-pill bg-brand px-2 py-0.5 font-mono text-[10px] font-bold text-brand-ink">
+            #{photo.printCode}
+          </span>
+        )}
       </div>
       <div className="flex flex-col gap-3 p-4">
         <div>

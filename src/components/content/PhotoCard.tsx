@@ -35,6 +35,11 @@ export function PhotoCard({
           className="h-auto w-full object-cover transition duration-300 group-hover:scale-[1.03]"
         />
         <div className="overlay-vert pointer-events-none absolute inset-x-0 bottom-0 h-1/2" />
+        {photo.printCode && (
+          <span className="absolute left-2 top-2 rounded-pill bg-brand/90 px-2 py-0.5 font-mono text-[9px] font-bold text-brand-ink">
+            #{photo.printCode}
+          </span>
+        )}
         <span className="absolute bottom-2 left-2 font-mono text-[9px] font-semibold uppercase tracking-wide text-white/90">
           {label}
         </span>

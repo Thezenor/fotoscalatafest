@@ -96,6 +96,11 @@ export default async function PhotoPage({
               className="h-auto w-full object-cover"
               priority
             />
+            {photo.printCode && (
+              <span className="absolute left-3 top-3 rounded-pill bg-brand px-3 py-1 font-mono text-[13px] font-bold text-brand-ink">
+                #{photo.printCode}
+              </span>
+            )}
             <WatermarkLogo />
           </div>
 

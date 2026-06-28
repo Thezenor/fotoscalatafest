@@ -100,6 +100,7 @@ async function main() {
         authorName: p.authorName ?? null,
         authorInstagram: p.authorInstagram ?? null,
         downloadQrToken: p.status === "APPROVED" ? crypto.randomUUID() : null,
+        printCode: crypto.randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase(),
       },
     });
   }

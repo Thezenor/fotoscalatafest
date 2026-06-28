@@ -36,6 +36,7 @@ function toDTO(p: DbPhotoWithStage): PhotoDTO {
     featured: p.featured,
     onScreen: p.onScreen,
     aiVerdict: p.aiVerdict,
+    printCode: p.printCode ?? undefined,
     createdAt: p.createdAt.toISOString(),
   };
 }

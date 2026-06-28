@@ -3,6 +3,7 @@ import { readObject, saveObject } from "@/server/services/storage.service";
 import { makeThumbnail, makeWatermarked } from "@/server/services/image.service";
 import { analyzeImage } from "@/server/services/ai-moderation.service";
 import { applyAiModeration } from "@/server/services/photo.service";
+import { ensurePrintCode } from "@/server/services/print.service";
 
 /**
  * Procesa una foto subida: miniatura + marca de agua (según config del evento)
@@ -34,6 +35,9 @@ export async function processPhoto(photoId: string): Promise<void> {
       where: { id: photoId },
       data: { thumbnailKey, watermarkedKey },
     });
+
+    // Código único visible para identificar/imprimir la foto.
+    await ensurePrintCode(photoId);
 
     // Moderación IA (degrada a PENDING si no hay credenciales).
     const ai = await analyzeImage(buffer);

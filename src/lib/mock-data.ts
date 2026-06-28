@@ -32,6 +32,7 @@ export interface Photo {
   featured: boolean;
   onScreen: boolean;
   aiVerdict?: string; // PENDING | CLEAN | NSFW | VIOLENCE | MINOR_SUSPECTED | ERROR
+  printCode?: string; // código único visible para identificar/imprimir
   createdAt: string;
 }
 

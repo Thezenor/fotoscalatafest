@@ -105,7 +105,7 @@ export function LiveStage({
           <div className="relative flex-1 overflow-hidden rounded-md">
             <PhotoLayer photo={current} kenBurns />
             <CornerQR landingUrl={landingUrl} labels={labels} />
-            <HeroCaption title={title(current)} sub={`${current.stageName.toUpperCase()} · ${dayUpper(current)}`} handle={handle(current)} />
+            <HeroCaption title={title(current)} sub={`${current.stageName.toUpperCase()} · ${dayUpper(current)}`} handle={handle(current)} code={current.printCode} />
           </div>
         )}
 
@@ -124,7 +124,7 @@ export function LiveStage({
           <>
             <div className="relative flex-[1.55] overflow-hidden rounded-md">
               <PhotoLayer photo={current} kenBurns />
-              <HeroCaption title={title(current)} sub={`${current.stageName.toUpperCase()} · ${dayUpper(current)}`} handle={handle(current)} />
+              <HeroCaption title={title(current)} sub={`${current.stageName.toUpperCase()} · ${dayUpper(current)}`} handle={handle(current)} code={current.printCode} />
             </div>
             <div className="flex flex-1 flex-col gap-5">
               <div className="flex items-center gap-4 rounded-md bg-white p-5">
@@ -188,10 +188,15 @@ function PhotoLayer({ photo, kenBurns }: { photo: Photo; kenBurns?: boolean }) {
   );
 }
 
-function HeroCaption({ title, sub, handle }: { title: string; sub: string; handle: string }) {
+function HeroCaption({ title, sub, handle, code }: { title: string; sub: string; handle: string; code?: string }) {
   return (
     <>
       <div className="overlay-vert absolute inset-0" />
+      {code && (
+        <span className="absolute left-5 top-5 rounded-pill bg-brand px-4 py-1.5 font-mono text-[18px] font-bold text-brand-ink">
+          #{code}
+        </span>
+      )}
       <div className="absolute inset-x-0 bottom-0 p-8">
         <p className="font-mono text-[14px] font-semibold uppercase tracking-wide text-brand">
           {sub}
