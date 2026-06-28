@@ -85,6 +85,7 @@
     "featured": "Featured",
     "filters": {
       "all": "All",
+      "popular": "Popular",
       "friday": "Friday",
       "saturday": "Saturday"
     },
@@ -96,7 +97,8 @@
     "requestRemoval": "Request removal of this photo",
     "buyPrint": "Get / print",
     "photoCode": "Photo code",
-    "photoCodeHint": "Give this code at the print station."
+    "photoCodeHint": "Give this code at the print station.",
+    "like": "Like"
   },
   "live": {
     "liveNow": "Photos live",

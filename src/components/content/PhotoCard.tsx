@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Share2, Download } from "lucide-react";
+import { Share2, Download, Heart } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
+import { likePhotoClient } from "@/lib/likes";
 import type { Photo } from "@/lib/mock-data";
 
 /** Item de galería (masonry). Acciones share/download al pasar/tocar. */
@@ -18,6 +20,17 @@ export function PhotoCard({
   onDownload?: (p: Photo) => void;
 }) {
   const router = useRouter();
+  const [likes, setLikes] = useState(photo.likes ?? 0);
+  const [liked, setLiked] = useState(false);
+
+  async function like() {
+    if (liked) return;
+    setLiked(true);
+    setLikes((n) => n + 1); // optimista
+    const total = await likePhotoClient(photo.id);
+    if (total !== null) setLikes(total);
+  }
+
   return (
     <div className="group relative mb-2.5 break-inside-avoid overflow-hidden rounded-sm border border-line">
       <button
@@ -43,6 +56,17 @@ export function PhotoCard({
         <span className="absolute bottom-2 left-2 font-mono text-[9px] font-semibold uppercase tracking-wide text-white/90">
           {label}
         </span>
+      </button>
+
+      {/* Me gusta (público) */}
+      <button
+        type="button"
+        onClick={like}
+        aria-label="me gusta"
+        className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 text-white backdrop-blur transition active:scale-95"
+      >
+        <Heart className={`h-4 w-4 ${liked ? "fill-brand text-brand" : ""}`} />
+        {likes > 0 && <span className="font-mono text-[11px] font-semibold">{likes}</span>}
       </button>
 
       {/* Visibles en táctil (móvil); en escritorio aparecen al pasar el ratón. */}

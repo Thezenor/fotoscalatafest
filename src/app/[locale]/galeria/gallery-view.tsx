@@ -13,6 +13,7 @@ const PAGE = 24;
 
 function filterToQuery(filter: string): string {
   if (filter === "all") return "";
+  if (filter === "popular") return "&sort=popular";
   if (filter === "VIE" || filter === "SÁB") return `&day=${encodeURIComponent(filter)}`;
   return `&stage=${encodeURIComponent(filter)}`;
 }

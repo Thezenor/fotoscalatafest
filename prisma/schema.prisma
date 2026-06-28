@@ -127,6 +127,9 @@ model Photo {
   featured Boolean @default(false) // ★ destacada
   onScreen Boolean @default(false) // enviada a la pantalla Live
 
+  // Reacciones del público (engagement + auto-curación)
+  likes Int @default(0)
+
   // QR de descarga INDIVIDUAL (se genera al aprobar)
   downloadQrToken String? @unique
 
@@ -161,6 +164,7 @@ model Photo {
   @@index([status, createdAt])
   @@index([status, featured])
   @@index([status, onScreen])
+  @@index([status, likes])
 }
 
 model Setting {

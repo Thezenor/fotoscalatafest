@@ -41,6 +41,7 @@ function toDTO(p: DbPhotoWithStage): PhotoDTO {
     aiVerdict: p.aiVerdict,
     printCode: p.printCode ?? undefined,
     downloadFree: p.event ? p.event.downloadMode === "free" : undefined,
+    likes: p.likes ?? 0,
     createdAt: p.createdAt.toISOString(),
   };
 }
@@ -68,9 +69,14 @@ export async function listApprovedPhotos(opts?: {
   day?: string;
   limit?: number;
   offset?: number;
+  sort?: string;
 }) {
   const event = await getActiveEvent();
   if (!event) return [];
+  const orderBy =
+    opts?.sort === "popular"
+      ? ([{ likes: "desc" }, { createdAt: "desc" }] as const)
+      : ({ createdAt: "desc" } as const);
   const rows = await prisma.photo.findMany({
     where: {
       eventId: event.id,
@@ -79,7 +85,7 @@ export async function listApprovedPhotos(opts?: {
       ...(opts?.stageSlug ? { stage: { slug: opts.stageSlug } } : {}),
     },
     include: { stage: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: orderBy as Prisma.PhotoOrderByWithRelationInput | Prisma.PhotoOrderByWithRelationInput[],
     ...(opts?.limit ? { take: opts.limit } : {}),
     ...(opts?.offset ? { skip: opts.offset } : {}),
   });
@@ -118,6 +124,18 @@ export async function getPublicPhoto(id: string) {
     include: { stage: true, event: { select: { downloadMode: true } } },
   });
   return row ? toDTO(row) : null;
+}
+
+/** Suma un "me gusta" a una foto aprobada y devuelve el total. */
+export async function likePhoto(id: string): Promise<number | null> {
+  const photo = await prisma.photo.findFirst({ where: { id, status: "APPROVED" }, select: { id: true } });
+  if (!photo) return null;
+  const updated = await prisma.photo.update({
+    where: { id },
+    data: { likes: { increment: 1 } },
+    select: { likes: true },
+  });
+  return updated.likes;
 }
 
 const MOD_STATUS: Record<string, PhotoStatus> = {

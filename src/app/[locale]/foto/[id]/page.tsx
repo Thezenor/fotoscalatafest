@@ -8,6 +8,7 @@ import { buttonClass } from "@/components/ui/Button";
 import { WatermarkLogo } from "@/components/content/WatermarkLogo";
 import { QRBlock } from "@/components/content/QRBlock";
 import { ShareButton } from "@/components/content/ShareButton";
+import { LikeButton } from "@/components/content/LikeButton";
 import { RemovalLink } from "@/components/content/RemovalLink";
 import { SiteNav } from "@/components/content/SiteNav";
 import { SiteFooter } from "@/components/content/SiteFooter";
@@ -171,6 +172,8 @@ export default async function PhotoPage({
                 </div>
               </>
             )}
+
+            <LikeButton photoId={photo.id} initial={photo.likes ?? 0} label={t("like")} />
 
             <QRBlock
               value={`https://fotoscalatafest.com/foto/${photo.id}`}

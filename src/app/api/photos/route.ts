@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
   const rows = await listApprovedPhotos({
     stageSlug: searchParams.get("stage") ?? undefined,
     day: searchParams.get("day") ?? undefined,
+    sort: searchParams.get("sort") ?? undefined,
     limit: limit + 1,
     offset,
   });

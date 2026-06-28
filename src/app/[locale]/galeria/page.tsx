@@ -47,6 +47,7 @@ export default async function GalleryPage({
 
   const options = [
     { value: "all", label: t("filters.all") },
+    { value: "popular", label: t("filters.popular") },
     ...stages.map((s) => ({ value: s.slug, label: s.name.replace("Escenario ", "").replace("Carpa ", "") })),
     { value: "VIE", label: t("filters.friday") },
     { value: "SÁB", label: t("filters.saturday") },

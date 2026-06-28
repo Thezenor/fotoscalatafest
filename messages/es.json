@@ -85,6 +85,7 @@
     "featured": "Destacada",
     "filters": {
       "all": "Todos",
+      "popular": "Populares",
       "friday": "Viernes",
       "saturday": "Sábado"
     },
@@ -96,7 +97,8 @@
     "requestRemoval": "Solicitar retirada de esta foto",
     "buyPrint": "Conseguir / imprimir",
     "photoCode": "Código de la foto",
-    "photoCodeHint": "Da este código en el punto de impresión."
+    "photoCodeHint": "Da este código en el punto de impresión.",
+    "like": "Me gusta"
   },
   "live": {
     "liveNow": "Fotos en directo",
