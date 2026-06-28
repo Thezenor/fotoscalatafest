@@ -54,3 +54,5 @@ _verify.ts
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.railway-secrets.txt
