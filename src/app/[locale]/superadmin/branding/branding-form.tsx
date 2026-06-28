@@ -25,7 +25,7 @@ export function BrandingForm({
       <section className="rounded-[16px] border border-line bg-surface p-5">
         <h2 className="font-display text-lg font-bold text-white">Logo</h2>
         <p className="mt-1 font-body text-sm text-mist">
-          PNG, SVG o WebP (máx 4 MB). Se usa en toda la web y como marca de agua.
+          PNG, WebP o JPG (máx 4 MB). Se usa en toda la web y como marca de agua.
         </p>
         <div className="mt-4 flex items-center gap-4">
           <span className="flex h-16 w-16 items-center justify-center rounded-md border border-line bg-ink p-2">
@@ -35,7 +35,7 @@ export function BrandingForm({
           <input
             type="file"
             name="logo"
-            accept="image/png,image/svg+xml,image/webp,image/jpeg"
+            accept="image/png,image/webp,image/jpeg"
             className="block w-full text-sm text-mist file:mr-3 file:rounded-pill file:border-0 file:bg-surface-2 file:px-4 file:py-2 file:font-body file:text-white"
           />
         </div>

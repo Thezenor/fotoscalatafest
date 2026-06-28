@@ -5,7 +5,9 @@ import { requireRole } from "@/server/auth/guards";
 import { getBranding, setBranding } from "@/server/services/settings.service";
 import { saveObject } from "@/server/services/storage.service";
 
-const ALLOWED = ["image/png", "image/svg+xml", "image/webp", "image/jpeg"];
+// SVG deshabilitado a propósito: librsvg procesando SVG no confiable es vector
+// de SSRF/DoS. Solo formatos raster.
+const ALLOWED = ["image/png", "image/webp", "image/jpeg"];
 
 export type BrandingState = { ok?: boolean; error?: string };
 

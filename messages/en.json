@@ -164,5 +164,26 @@
   "legal": {
     "termsTitle": "Terms and conditions",
     "privacyTitle": "Privacy policy"
+  },
+  "shop": {
+    "title": "Get your photo",
+    "saleOff": "Photo sales are not active yet.",
+    "noGateway": "Payment gateway not configured yet.",
+    "downloadTitle": "High-quality download",
+    "downloadDesc": "No watermark, treated and with the sponsor logo.",
+    "printTitle": "Print here",
+    "printDesc": "Pick up your copy at the print point (with number and QR).",
+    "payCard": "Pay by card",
+    "payPaypal": "Pay with PayPal",
+    "payError": "Could not start the payment",
+    "paid": "Payment completed!",
+    "downloadReady": "Your high-quality photo is ready.",
+    "download": "Download photo",
+    "showCode": "Show this code at the print point:",
+    "viewCopy": "View copy",
+    "failTitle": "Payment not completed",
+    "failMsg": "We couldn't confirm the payment. If you were charged, contact the organization.",
+    "retry": "Retry",
+    "back": "Back to photo"
   }
 }

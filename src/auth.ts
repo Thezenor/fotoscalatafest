@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/server/db";
 import { authConfig } from "@/server/auth/auth.config";
+import { rateLimit, clientIpFrom } from "@/server/services/ratelimit.service";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -22,11 +23,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Contraseña", type: "password" },
       },
-      async authorize(raw) {
+      async authorize(raw, request) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
 
         const { email, password } = parsed.data;
+
+        // Anti-fuerza-bruta: máx. 8 intentos por IP+email cada 10 min.
+        const ip = request?.headers ? clientIpFrom(request.headers as Headers) : "unknown";
+        const rl = await rateLimit(`login:${ip}:${email.toLowerCase()}`, 8, 600);
+        if (!rl.ok) return null;
+
         const user = await prisma.user.findUnique({
           where: { email: email.toLowerCase() },
         });

@@ -36,6 +36,7 @@ export async function updatePaymentsAction(_prev: StoreState, formData: FormData
       stripeEnabled: formData.get("stripeEnabled") === "on",
       stripeSecretKey: keep("stripeSecretKey", cur.stripeSecretKey),
       stripePublishableKey: keep("stripePublishableKey", cur.stripePublishableKey),
+      stripeWebhookSecret: keep("stripeWebhookSecret", cur.stripeWebhookSecret),
       paypalEnabled: formData.get("paypalEnabled") === "on",
       paypalClientId: keep("paypalClientId", cur.paypalClientId),
       paypalSecret: keep("paypalSecret", cur.paypalSecret),

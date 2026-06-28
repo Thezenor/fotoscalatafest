@@ -9,11 +9,13 @@ export function CheckoutButton({
   kind,
   provider,
   label,
+  errorLabel,
 }: {
   photoId: string;
   kind: "download" | "print";
   provider: "stripe" | "paypal";
   label: string;
+  errorLabel: string;
 }) {
   const locale = useLocale();
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,7 @@ export function CheckoutButton({
       >
         {loading ? "…" : label}
       </button>
-      {error && <span className="text-xs text-danger">No se pudo iniciar el pago ({error}).</span>}
+      {error && <span className="text-xs text-danger">{errorLabel} ({error}).</span>}
     </div>
   );
 }

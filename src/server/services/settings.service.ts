@@ -45,6 +45,7 @@ export interface Payments {
   stripeEnabled: boolean;
   stripeSecretKey: string | null;
   stripePublishableKey: string | null;
+  stripeWebhookSecret: string | null;
   paypalEnabled: boolean;
   paypalClientId: string | null;
   paypalSecret: string | null;
@@ -137,6 +138,7 @@ const DEFAULT_PAYMENTS: Payments = {
   stripeEnabled: false,
   stripeSecretKey: null,
   stripePublishableKey: null,
+  stripeWebhookSecret: null,
   paypalEnabled: false,
   paypalClientId: null,
   paypalSecret: null,

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { CheckCircle2, XCircle, Download } from "lucide-react";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/server/db";
 import { verifyPayment } from "@/server/services/payments.service";
@@ -19,6 +19,7 @@ export default async function CheckoutOkPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("shop");
   const { order: orderId, provider } = await searchParams;
   if (!orderId) notFound();
 
@@ -46,20 +47,20 @@ export default async function CheckoutOkPage({
       {paid ? (
         <>
           <CheckCircle2 className="h-16 w-16 text-success" />
-          <h1 className="font-display text-3xl font-bold uppercase text-white">¡Pago completado!</h1>
+          <h1 className="font-display text-3xl font-bold uppercase text-white">{t("paid")}</h1>
           {order.kind === "download" ? (
             <>
-              <p className="font-body text-mist">Tu foto en alta calidad está lista.</p>
+              <p className="font-body text-mist">{t("downloadReady")}</p>
               <a href={`/api/photos/${id}/treated?mode=download&order=${order.id}`} target="_blank" rel="noopener noreferrer" className={buttonClass({ className: "uppercase" })}>
-                <Download className="h-5 w-5" /> Descargar foto
+                <Download className="h-5 w-5" /> {t("download")}
               </a>
             </>
           ) : (
             <>
-              <p className="font-body text-mist">Muestra este código en el punto de impresión:</p>
+              <p className="font-body text-mist">{t("showCode")}</p>
               <p className="font-display text-4xl font-bold text-brand">#{code}</p>
               <a href={`/api/photos/${id}/treated?mode=print&order=${order.id}`} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: "secondary", size: "md", className: "uppercase" })}>
-                Ver copia
+                {t("viewCopy")}
               </a>
             </>
           )}
@@ -67,10 +68,10 @@ export default async function CheckoutOkPage({
       ) : (
         <>
           <XCircle className="h-16 w-16 text-danger" />
-          <h1 className="font-display text-2xl font-bold uppercase text-white">Pago no completado</h1>
-          <p className="font-body text-mist">No hemos podido confirmar el pago. Si se te cobró, contacta con la organización.</p>
+          <h1 className="font-display text-2xl font-bold uppercase text-white">{t("failTitle")}</h1>
+          <p className="font-body text-mist">{t("failMsg")}</p>
           <Link href={`/comprar/${id}`} className={buttonClass({ variant: "secondary", size: "md", className: "uppercase" })}>
-            Reintentar
+            {t("retry")}
           </Link>
         </>
       )}

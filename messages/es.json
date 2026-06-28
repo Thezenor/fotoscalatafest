@@ -164,5 +164,26 @@
   "legal": {
     "termsTitle": "Términos y condiciones",
     "privacyTitle": "Política de privacidad"
+  },
+  "shop": {
+    "title": "Consigue tu foto",
+    "saleOff": "La venta de fotos no está activa todavía.",
+    "noGateway": "Pasarela de pago aún no configurada.",
+    "downloadTitle": "Descarga en alta calidad",
+    "downloadDesc": "Sin marca de agua, tratada y con el logo del patrocinador.",
+    "printTitle": "Imprimir aquí",
+    "printDesc": "Recoge tu copia en el punto de impresión (con número y QR).",
+    "payCard": "Pagar con tarjeta",
+    "payPaypal": "Pagar con PayPal",
+    "payError": "No se pudo iniciar el pago",
+    "paid": "¡Pago completado!",
+    "downloadReady": "Tu foto en alta calidad está lista.",
+    "download": "Descargar foto",
+    "showCode": "Muestra este código en el punto de impresión:",
+    "viewCopy": "Ver copia",
+    "failTitle": "Pago no completado",
+    "failMsg": "No hemos podido confirmar el pago. Si se te cobró, contacta con la organización.",
+    "retry": "Reintentar",
+    "back": "Volver a la foto"
   }
 }

@@ -164,5 +164,26 @@
   "legal": {
     "termsTitle": "Termes i condicions",
     "privacyTitle": "Política de privadesa"
+  },
+  "shop": {
+    "title": "Aconsegueix la teva foto",
+    "saleOff": "La venda de fotos encara no està activa.",
+    "noGateway": "Passarel·la de pagament encara no configurada.",
+    "downloadTitle": "Descàrrega en alta qualitat",
+    "downloadDesc": "Sense marca d'aigua, tractada i amb el logo del patrocinador.",
+    "printTitle": "Imprimir aquí",
+    "printDesc": "Recull la teva còpia al punt d'impressió (amb número i QR).",
+    "payCard": "Pagar amb targeta",
+    "payPaypal": "Pagar amb PayPal",
+    "payError": "No s'ha pogut iniciar el pagament",
+    "paid": "Pagament completat!",
+    "downloadReady": "La teva foto en alta qualitat està llesta.",
+    "download": "Descarregar foto",
+    "showCode": "Mostra aquest codi al punt d'impressió:",
+    "viewCopy": "Veure còpia",
+    "failTitle": "Pagament no completat",
+    "failMsg": "No hem pogut confirmar el pagament. Si se't va cobrar, contacta amb l'organització.",
+    "retry": "Reintentar",
+    "back": "Tornar a la foto"
   }
 }

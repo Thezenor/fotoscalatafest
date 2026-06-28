@@ -15,7 +15,6 @@ import { processPhoto } from "@/server/queue/processor";
 export const runtime = "nodejs";
 
 const MAX_BYTES = 12 * 1024 * 1024; // 12 MB
-const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 // GET /api/photos?stage=&day=&limit=&offset= → galería pública (solo APPROVED).
 export async function GET(req: NextRequest) {
@@ -58,9 +57,6 @@ export async function POST(req: NextRequest) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "file_required" }, { status: 400 });
   }
-  if (!ALLOWED.includes(file.type)) {
-    return NextResponse.json({ error: "invalid_type" }, { status: 415 });
-  }
   if (file.size > MAX_BYTES) {
     return NextResponse.json({ error: "too_large" }, { status: 413 });
   }
@@ -73,12 +69,26 @@ export async function POST(req: NextRequest) {
     .digest("hex")
     .slice(0, 32);
 
-  // Re-encode con sharp: corrige orientación y ELIMINA EXIF/metadatos.
+  // Validación REAL del contenido (no se confía en file.type del cliente):
+  // sharp lee el formato de los bytes; rechaza lo que no sea imagen permitida.
+  // limitInputPixels evita "decompression bombs".
   const input = Buffer.from(await file.arrayBuffer());
-  const img = sharp(input).rotate();
-  const meta = await img.metadata();
-  const clean = await img.toBuffer();
-  const originalKey = await saveObject(clean, file.type);
+  const ALLOWED_FORMATS = ["jpeg", "png", "webp", "avif"];
+  let meta: import("sharp").Metadata;
+  let clean: Buffer;
+  let mime: string;
+  try {
+    const img = sharp(input, { limitInputPixels: 100_000_000 }).rotate();
+    meta = await img.metadata();
+    if (!meta.format || !ALLOWED_FORMATS.includes(meta.format)) {
+      return NextResponse.json({ error: "invalid_type" }, { status: 415 });
+    }
+    mime = meta.format === "jpeg" ? "image/jpeg" : `image/${meta.format}`;
+    clean = await img.toBuffer();
+  } catch {
+    return NextResponse.json({ error: "invalid_image" }, { status: 400 });
+  }
+  const originalKey = await saveObject(clean, mime);
 
   // Registro de consentimiento legal.
   const consent = await createConsent({
@@ -93,7 +103,7 @@ export async function POST(req: NextRequest) {
   const photo = await createUploadedPhoto({
     stageSlug,
     originalKey,
-    mimeType: file.type,
+    mimeType: mime,
     width: meta.width,
     height: meta.height,
     sizeBytes: clean.length,

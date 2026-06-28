@@ -71,7 +71,11 @@ export function PagosForm({
         <div className="mt-3 grid gap-3">
           <Input name="stripeSecretKey" placeholder="Secret key (sk_live_… / sk_test_…)" />
           <Input name="stripePublishableKey" placeholder="Publishable key (pk_…)" />
+          <Input name="stripeWebhookSecret" placeholder="Webhook signing secret (whsec_…)" />
         </div>
+        <p className="mt-2 font-body text-xs text-mist-2">
+          Webhook: configura en Stripe el endpoint <code>/api/print/stripe/webhook</code> (evento checkout.session.completed) y pega aquí su signing secret.
+        </p>
       </section>
 
       {/* PayPal */}

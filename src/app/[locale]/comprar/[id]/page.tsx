@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getPublicPhoto } from "@/server/services/photo.service";
 import { getPrintConfig, getPayments } from "@/server/services/settings.service";
@@ -21,6 +21,7 @@ export default async function BuyPage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("shop");
   const photo = await getPublicPhoto(id);
   if (!photo) notFound();
 
@@ -31,8 +32,8 @@ export default async function BuyPage({
   ]);
 
   const items = [
-    { kind: "download" as const, on: cfg.downloadEnabled, cents: cfg.downloadPriceCents, title: "Descarga en alta calidad", desc: "Sin marca de agua, tratada y con el logo del patrocinador." },
-    { kind: "print" as const, on: cfg.printEnabled, cents: cfg.printPriceCents, title: "Imprimir aquí", desc: "Recoge tu copia en el punto de impresión (con número y QR)." },
+    { kind: "download" as const, on: cfg.downloadEnabled, cents: cfg.downloadPriceCents, title: t("downloadTitle"), desc: t("downloadDesc") },
+    { kind: "print" as const, on: cfg.printEnabled, cents: cfg.printPriceCents, title: t("printTitle"), desc: t("printDesc") },
   ].filter((i) => i.on);
 
   return (
@@ -45,15 +46,15 @@ export default async function BuyPage({
         <Image src={photo.url} alt={photo.stageName} width={photo.width} height={photo.height} sizes="480px" className="h-auto w-full" />
       </div>
 
-      <h1 className="mt-5 font-display text-2xl font-bold uppercase text-white">Consigue tu foto</h1>
+      <h1 className="mt-5 font-display text-2xl font-bold uppercase text-white">{t("title")}</h1>
 
       {items.length === 0 ? (
         <p className="mt-3 rounded-md border border-line bg-surface p-4 font-body text-sm text-mist">
-          La venta de fotos no está activa todavía. (Configurable en el panel: Pagos.)
+          {t("saleOff")}
         </p>
       ) : providers.length === 0 ? (
         <p className="mt-3 rounded-md border border-line bg-surface p-4 font-body text-sm text-mist">
-          Pasarela de pago aún no configurada. Pega las claves de Stripe o PayPal en el panel (Pagos).
+          {t("noGateway")}
         </p>
       ) : (
         <div className="mt-4 flex flex-col gap-5">
@@ -66,10 +67,10 @@ export default async function BuyPage({
               <p className="mt-1 font-body text-sm text-mist">{it.desc}</p>
               <div className="mt-4 flex flex-col gap-2">
                 {providers.includes("stripe") && (
-                  <CheckoutButton photoId={id} kind={it.kind} provider="stripe" label="Pagar con tarjeta (Stripe)" />
+                  <CheckoutButton photoId={id} kind={it.kind} provider="stripe" label={t("payCard")} errorLabel={t("payError")} />
                 )}
                 {providers.includes("paypal") && (
-                  <CheckoutButton photoId={id} kind={it.kind} provider="paypal" label="Pagar con PayPal" />
+                  <CheckoutButton photoId={id} kind={it.kind} provider="paypal" label={t("payPaypal")} errorLabel={t("payError")} />
                 )}
               </div>
             </section>
