@@ -35,11 +35,14 @@ export default async function GalleryPage({
   const t = await getTranslations("gallery");
   const tc = await getTranslations("common");
 
-  const [photos, featured, stages] = await Promise.all([
-    listApprovedPhotos(),
+  const PAGE = 24;
+  const [firstRows, featured, stages] = await Promise.all([
+    listApprovedPhotos({ limit: PAGE + 1 }),
     listFeaturedPhotos(),
     listStages(),
   ]);
+  const photos = firstRows.slice(0, PAGE);
+  const initialHasMore = firstRows.length > PAGE;
 
   const options = [
     { value: "all", label: t("filters.all") },
@@ -67,6 +70,7 @@ export default async function GalleryPage({
 
       <GalleryView
         photos={photos}
+        initialHasMore={initialHasMore}
         featured={featured}
         options={options}
         featuredLabel={t("featured")}

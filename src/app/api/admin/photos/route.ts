@@ -13,10 +13,18 @@ export async function GET(req: NextRequest) {
   if (!hasRole(session?.user?.role, "MODERATOR"))
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const status = req.nextUrl.searchParams.get("status");
-  let photos = await listForModeration();
-  if (status) photos = photos.filter((p) => p.status === status);
-  return NextResponse.json({ photos });
+  const sp = req.nextUrl.searchParams;
+  const limit = Math.min(90, Math.max(1, Number(sp.get("limit")) || 48));
+  const offset = Math.max(0, Number(sp.get("offset")) || 0);
+  const rows = await listForModeration({
+    status: sp.get("status") ?? undefined,
+    stageSlug: sp.get("stage") ?? undefined,
+    day: sp.get("day") ?? undefined,
+    limit: limit + 1,
+    offset,
+  });
+  const hasMore = rows.length > limit;
+  return NextResponse.json({ photos: rows.slice(0, limit), hasMore });
 }
 
 // PATCH /api/admin/photos  { id, action } → aplica moderación + auditoría.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Check, X, Star, MonitorPlay, RotateCcw } from "lucide-react";
 import { ModerationCard, type ModerationLabels } from "./ModerationCard";
@@ -24,14 +24,24 @@ export interface ModerationViewLabels extends ModerationLabels {
   toastOnScreen: string;
 }
 
+const PAGE = 48;
+function filterToQuery(filter: string): string {
+  if (filter === "all") return "";
+  if (filter === "pending" || filter === "approved" || filter === "rejected") return `&status=${filter}`;
+  if (filter === "VIE" || filter === "SÁB") return `&day=${encodeURIComponent(filter)}`;
+  return `&stage=${encodeURIComponent(filter)}`;
+}
+
 export function AdminModeration({
   initial,
+  initialHasMore,
   locale,
   filters,
   labels,
   stats,
 }: {
   initial: Photo[];
+  initialHasMore: boolean;
   locale: string;
   filters: ChipOption[];
   labels: ModerationViewLabels;
@@ -39,15 +49,54 @@ export function AdminModeration({
 }) {
   const [queue, setQueue] = useState<Photo[]>(initial);
   const [filter, setFilter] = useState("all");
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ msg: string; photo: Photo } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const offsetRef = useRef(initial.length);
+  const sentinel = useRef<HTMLDivElement | null>(null);
 
-  const visible = queue.filter((p) => {
-    if (filter === "pending") return p.status === "pending";
-    if (filter === "all") return true;
-    if (filter === "VIE" || filter === "SÁB") return p.day === filter;
-    return p.stageId === filter;
-  });
+  const visible = queue;
+
+  async function changeFilter(f: string) {
+    setFilter(f);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/photos?limit=${PAGE}&offset=0${filterToQuery(f)}`, { cache: "no-store" });
+      const data = await res.json();
+      setQueue(data.photos ?? []);
+      setHasMore(!!data.hasMore);
+      offsetRef.current = (data.photos ?? []).length;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/photos?limit=${PAGE}&offset=${offsetRef.current}${filterToQuery(filter)}`, { cache: "no-store" });
+      const data = await res.json();
+      const next: Photo[] = data.photos ?? [];
+      setQueue((prev) => {
+        const seen = new Set(prev.map((p) => p.id));
+        return [...prev, ...next.filter((p) => !seen.has(p.id))];
+      });
+      offsetRef.current += next.length;
+      setHasMore(!!data.hasMore);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, filter]);
+
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el) return;
+    const obs = new IntersectionObserver((e) => e[0].isIntersecting && loadMore(), { rootMargin: "500px" });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [loadMore]);
 
   function act(photo: Photo, kind: ActionKind) {
     // Optimista: la tarjeta sale de la cola y se persiste en la DB.
@@ -91,11 +140,13 @@ export function AdminModeration({
       </div>
 
       <div className="mb-4">
-        <FilterChips options={filters} value={filter} onChange={setFilter} />
+        <FilterChips options={filters} value={filter} onChange={changeFilter} />
       </div>
 
       {visible.length === 0 ? (
-        <p className="py-16 text-center font-body text-sm text-mist">{labels.queueEmpty}</p>
+        <p className="py-16 text-center font-body text-sm text-mist">
+          {loading ? "Cargando…" : labels.queueEmpty}
+        </p>
       ) : (
         <>
           {/* Escritorio: grid */}
@@ -119,6 +170,19 @@ export function AdminModeration({
             <SwipeModerator photos={visible} locale={locale} labels={labels} onAction={act} />
           </div>
         </>
+      )}
+
+      {/* Scroll infinito (solo escritorio; en móvil el swipe consume la cola) */}
+      <div ref={sentinel} className="hidden h-8 lg:block" />
+      {hasMore && (
+        <button
+          type="button"
+          onClick={loadMore}
+          disabled={loading}
+          className="mx-auto mt-3 block rounded-pill border border-line px-5 py-2 font-mono text-xs uppercase tracking-wide text-mist lg:hidden"
+        >
+          {loading ? "Cargando…" : "Cargar más"}
+        </button>
       )}
 
       {/* Toast deshacer */}

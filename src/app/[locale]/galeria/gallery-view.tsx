@@ -1,20 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { FeaturedCarousel } from "@/components/content/FeaturedCarousel";
 import { FilterChips, type ChipOption } from "@/components/content/FilterChips";
 import { PhotoCard } from "@/components/content/PhotoCard";
 import { dayLabel, type Photo } from "@/lib/mock-data";
 
+const PAGE = 24;
+
+function filterToQuery(filter: string): string {
+  if (filter === "all") return "";
+  if (filter === "VIE" || filter === "SÁB") return `&day=${encodeURIComponent(filter)}`;
+  return `&stage=${encodeURIComponent(filter)}`;
+}
+
 export function GalleryView({
-  photos,
+  photos: initial,
+  initialHasMore,
   featured,
   options,
   featuredLabel,
   emptyLabel,
 }: {
   photos: Photo[];
+  initialHasMore: boolean;
   featured: Photo[];
   options: ChipOption[];
   featuredLabel: string;
@@ -22,12 +32,56 @@ export function GalleryView({
 }) {
   const locale = useLocale();
   const [filter, setFilter] = useState("all");
+  const [photos, setPhotos] = useState<Photo[]>(initial);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [loading, setLoading] = useState(false);
+  const offsetRef = useRef(initial.length);
+  const sentinel = useRef<HTMLDivElement | null>(null);
 
-  const filtered = useMemo(() => {
-    if (filter === "all") return photos;
-    if (filter === "VIE" || filter === "SÁB") return photos.filter((p) => p.day === filter);
-    return photos.filter((p) => p.stageId === filter);
-  }, [filter, photos]);
+  // Cambia de filtro → recarga la primera página desde el servidor.
+  async function changeFilter(f: string) {
+    setFilter(f);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/photos?limit=${PAGE}&offset=0${filterToQuery(f)}`, { cache: "no-store" });
+      const data = await res.json();
+      setPhotos(data.photos ?? []);
+      setHasMore(!!data.hasMore);
+      offsetRef.current = (data.photos ?? []).length;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/photos?limit=${PAGE}&offset=${offsetRef.current}${filterToQuery(filter)}`,
+        { cache: "no-store" },
+      );
+      const data = await res.json();
+      const next: Photo[] = data.photos ?? [];
+      setPhotos((prev) => [...prev, ...next]);
+      offsetRef.current += next.length;
+      setHasMore(!!data.hasMore);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, filter]);
+
+  // Scroll infinito vía IntersectionObserver.
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => entries[0].isIntersecting && loadMore(),
+      { rootMargin: "600px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [loadMore]);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
@@ -35,21 +89,19 @@ export function GalleryView({
         <FeaturedCarousel
           slides={featured}
           featuredLabel={featuredLabel}
-          caption={(p) =>
-            `${dayLabel(p.day, locale)}${p.time ? ` · ${p.time}` : ""}`
-          }
+          caption={(p) => `${dayLabel(p.day, locale)}${p.time ? ` · ${p.time}` : ""}`}
         />
       </div>
 
       <div className="sticky top-0 z-30 bg-ink/90 py-2 backdrop-blur lg:top-[69px] lg:px-3">
-        <FilterChips options={options} value={filter} onChange={setFilter} />
+        <FilterChips options={options} value={filter} onChange={changeFilter} />
       </div>
 
-      {filtered.length === 0 ? (
+      {photos.length === 0 && !loading ? (
         <p className="px-5 py-10 text-center font-body text-sm text-mist">{emptyLabel}</p>
       ) : (
-        <div className="columns-2 gap-2.5 px-5 pb-10 md:columns-3 lg:columns-4 lg:px-8">
-          {filtered.map((p) => (
+        <div className="columns-2 gap-2.5 px-5 pb-4 md:columns-3 lg:columns-4 lg:px-8">
+          {photos.map((p) => (
             <PhotoCard
               key={p.id}
               photo={p}
@@ -63,6 +115,14 @@ export function GalleryView({
             />
           ))}
         </div>
+      )}
+
+      {/* Sentinela de scroll infinito */}
+      <div ref={sentinel} className="h-10" />
+      {loading && (
+        <p className="pb-8 text-center font-mono text-xs uppercase tracking-wide text-mist">
+          Cargando…
+        </p>
       )}
     </div>
   );

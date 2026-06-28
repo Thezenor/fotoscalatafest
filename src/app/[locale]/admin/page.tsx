@@ -24,11 +24,14 @@ export default async function AdminPage({
   const t = await getTranslations("admin");
   const tg = await getTranslations("gallery");
 
+  const BOARD_PAGE = 48;
   const event = await getActiveEvent();
-  const [board, stats] = await Promise.all([
-    listForModeration(),
+  const [firstRows, stats] = await Promise.all([
+    listForModeration({ limit: BOARD_PAGE + 1 }),
     event ? getModerationStats(event.id) : Promise.resolve({ pending: 0, approved: 0, uploadedToday: 0, onScreen: 0 }),
   ]);
+  const board = firstRows.slice(0, BOARD_PAGE);
+  const boardHasMore = firstRows.length > BOARD_PAGE;
   const pendingCount = stats.pending;
 
   const filters = [
@@ -131,7 +134,7 @@ export default async function AdminPage({
           <StatCard label={t("onScreen")} value={String(stats.onScreen)} />
         </div>
 
-        <AdminModeration initial={board} locale={locale} filters={filters} labels={labels} stats={stats} />
+        <AdminModeration initial={board} initialHasMore={boardHasMore} locale={locale} filters={filters} labels={labels} stats={stats} />
       </main>
     </div>
   );

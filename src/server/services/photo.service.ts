@@ -53,8 +53,13 @@ export async function getStageBySlug(slug: string) {
   return prisma.stage.findFirst({ where: { eventId: event.id, slug } });
 }
 
-/** Galería pública: solo APPROVED. Filtros opcionales por escenario (slug) y día. */
-export async function listApprovedPhotos(opts?: { stageSlug?: string; day?: string }) {
+/** Galería pública: solo APPROVED. Filtros opcionales + paginación (take/skip). */
+export async function listApprovedPhotos(opts?: {
+  stageSlug?: string;
+  day?: string;
+  limit?: number;
+  offset?: number;
+}) {
   const event = await getActiveEvent();
   if (!event) return [];
   const rows = await prisma.photo.findMany({
@@ -66,6 +71,8 @@ export async function listApprovedPhotos(opts?: { stageSlug?: string; day?: stri
     },
     include: { stage: true },
     orderBy: { createdAt: "desc" },
+    ...(opts?.limit ? { take: opts.limit } : {}),
+    ...(opts?.offset ? { skip: opts.offset } : {}),
   });
   return rows.map(toDTO);
 }
@@ -97,14 +104,34 @@ export async function getPublicPhoto(id: string) {
   return row ? toDTO(row) : null;
 }
 
-/** Cola de moderación (todas las del evento, para el board admin). */
-export async function listForModeration() {
+const MOD_STATUS: Record<string, PhotoStatus> = {
+  pending: "PENDING",
+  approved: "APPROVED",
+  rejected: "REJECTED",
+};
+
+/** Cola de moderación con filtros + paginación (para el board admin). */
+export async function listForModeration(opts?: {
+  status?: string;
+  stageSlug?: string;
+  day?: string;
+  limit?: number;
+  offset?: number;
+}) {
   const event = await getActiveEvent();
   if (!event) return [];
+  const status = opts?.status && MOD_STATUS[opts.status] ? MOD_STATUS[opts.status] : undefined;
   const rows = await prisma.photo.findMany({
-    where: { eventId: event.id },
+    where: {
+      eventId: event.id,
+      ...(status ? { status } : {}),
+      ...(opts?.day === "VIE" || opts?.day === "SÁB" ? { day: opts.day } : {}),
+      ...(opts?.stageSlug ? { stage: { slug: opts.stageSlug } } : {}),
+    },
     include: { stage: true },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    ...(opts?.limit ? { take: opts.limit } : {}),
+    ...(opts?.offset ? { skip: opts.offset } : {}),
   });
   return rows.map(toDTO);
 }

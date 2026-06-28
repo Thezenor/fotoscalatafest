@@ -17,14 +17,20 @@ export const runtime = "nodejs";
 const MAX_BYTES = 12 * 1024 * 1024; // 12 MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
-// GET /api/photos?stage=&day= → galería pública (solo APPROVED).
+// GET /api/photos?stage=&day=&limit=&offset= → galería pública (solo APPROVED).
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const photos = await listApprovedPhotos({
+  const limit = Math.min(60, Math.max(1, Number(searchParams.get("limit")) || 24));
+  const offset = Math.max(0, Number(searchParams.get("offset")) || 0);
+  // Pedimos uno de más para saber si hay más páginas.
+  const rows = await listApprovedPhotos({
     stageSlug: searchParams.get("stage") ?? undefined,
     day: searchParams.get("day") ?? undefined,
+    limit: limit + 1,
+    offset,
   });
-  return NextResponse.json({ photos });
+  const hasMore = rows.length > limit;
+  return NextResponse.json({ photos: rows.slice(0, limit), hasMore });
 }
 
 // POST /api/photos (multipart) → subida real. La foto entra como PENDING.
