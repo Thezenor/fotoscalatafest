@@ -69,7 +69,7 @@ export default async function PhotoPage({
   return (
     <main className="w-full flex-1">
       <JsonLd data={jsonLd} />
-      <SiteNav labels={{ gallery: tc("viewGallery"), upload: tc("uploadPhoto") }} />
+      <SiteNav />
 
       {/* Cabecera móvil */}
       <header className="flex items-center justify-between px-5 py-4 lg:hidden">

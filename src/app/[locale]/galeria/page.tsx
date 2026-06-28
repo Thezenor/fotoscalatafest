@@ -53,7 +53,7 @@ export default async function GalleryPage({
 
   return (
     <main className="w-full flex-1">
-      <SiteNav labels={{ gallery: tc("viewGallery"), upload: tc("uploadPhoto") }} />
+      <SiteNav />
 
       {/* Cabecera móvil */}
       <header className="flex items-center justify-between px-5 py-4 lg:hidden">

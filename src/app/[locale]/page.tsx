@@ -50,7 +50,7 @@ export default async function LandingPage({
   return (
     <main className="w-full flex-1">
       <JsonLd data={jsonLd} />
-      <SiteNav floating labels={{ gallery: tc("viewGallery"), upload: tc("uploadPhoto") }} />
+      <SiteNav floating />
 
       {/* HERO */}
       <section className="relative min-h-[560px] overflow-hidden lg:min-h-[82vh]">
@@ -62,7 +62,16 @@ export default async function LandingPage({
         <div className="absolute inset-x-0 top-0 lg:hidden">
           <div className="flex items-center justify-between px-5 pb-3 pt-4">
             <Logo size={30} wordSize={18} />
-            <LangSwitcher />
+            <div className="flex items-center gap-2">
+              <Link
+                href="/superadmin"
+                aria-label={ts("openPanel")}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 text-white"
+              >
+                <Lock className="h-4 w-4" />
+              </Link>
+              <LangSwitcher />
+            </div>
           </div>
           <Marquee text={t("marquee")} />
         </div>
@@ -122,15 +131,9 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* PATROCINADORES + acceso al panel */}
+      {/* PATROCINADORES */}
       <section className="flex flex-col items-center gap-6 border-t border-surface-2 px-[22px] py-8 lg:py-12">
         <SponsorStrip title={t("sponsors")} sponsors={branding.sponsors} />
-        <Link
-          href="/superadmin"
-          className="inline-flex items-center gap-2 rounded-pill border border-line px-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-wide text-mist transition hover:border-brand hover:text-brand"
-        >
-          <Lock className="h-3.5 w-3.5" /> {ts("openPanel")}
-        </Link>
       </section>
     </main>
   );

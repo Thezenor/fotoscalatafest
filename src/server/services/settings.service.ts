@@ -16,7 +16,8 @@ export interface Branding {
 
 export interface AiSettings {
   enabled: boolean;
-  googleCredentials: string | null; // JSON del service account (string)
+  provider: string; // "google-vision" | "aws-rekognition" | "openai-vision" | "sightengine"
+  apiKeys: Record<string, string>; // proveedor → clave/credenciales
 }
 
 export interface Terms {
@@ -30,7 +31,7 @@ const DEFAULT_BRANDING: Branding = {
   sponsors: ["Heraldo", "Coca-Cola", "Beefeater", "Ibercaja", "Ámbar", "Bono Cultural"],
 };
 
-const DEFAULT_AI: AiSettings = { enabled: true, googleCredentials: null };
+const DEFAULT_AI: AiSettings = { enabled: true, provider: "google-vision", apiKeys: {} };
 
 const cache = new Map<string, { value: unknown; exp: number }>();
 const TTL_MS = 30_000;
@@ -63,7 +64,21 @@ export const getBranding = () => getSetting<Branding>("branding", DEFAULT_BRANDI
 export const setBranding = (v: Branding, actorId?: string | null) => setSetting("branding", v, actorId);
 
 // ── IA ──
-export const getAiSettings = () => getSetting<AiSettings>("ai", DEFAULT_AI);
+export async function getAiSettings(): Promise<AiSettings> {
+  const raw = await getSetting<Record<string, unknown>>("ai", DEFAULT_AI as unknown as Record<string, unknown>);
+  // Compatibilidad con el formato antiguo { enabled, googleCredentials }.
+  if (raw && "googleCredentials" in raw && !("apiKeys" in raw)) {
+    const apiKeys: Record<string, string> = {};
+    if (raw.googleCredentials) apiKeys["google-vision"] = String(raw.googleCredentials);
+    return { enabled: Boolean(raw.enabled), provider: "google-vision", apiKeys };
+  }
+  const v = raw as unknown as AiSettings;
+  return {
+    enabled: Boolean(v.enabled),
+    provider: v.provider ?? "google-vision",
+    apiKeys: v.apiKeys ?? {},
+  };
+}
 export const setAiSettings = (v: AiSettings, actorId?: string | null) => setSetting("ai", v, actorId);
 
 // ── Términos ──

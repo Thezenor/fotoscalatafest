@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { requireRole } from "@/server/auth/guards";
 import { getAiSettings } from "@/server/services/settings.service";
-import { isAiReady } from "@/server/services/ai-moderation.service";
+import { isAiReady, AI_PROVIDERS } from "@/server/services/ai-moderation.service";
 import { SuperHeader } from "@/components/admin/SuperHeader";
 import { AiForm } from "./ai-form";
 
@@ -17,10 +17,18 @@ export default async function AiPage({
   await requireRole("SUPERADMIN");
   const [ai, ready] = await Promise.all([getAiSettings(), isAiReady()]);
 
+  const providers = AI_PROVIDERS.map((p) => ({
+    id: p.id,
+    label: p.label,
+    implemented: p.implemented,
+    keyLabel: p.keyLabel,
+    hasKey: !!ai.apiKeys[p.id],
+  }));
+
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-8 lg:px-8">
       <SuperHeader title="Moderación con IA" />
-      <AiForm enabled={ai.enabled} hasCredentials={!!ai.googleCredentials} ready={ready} />
+      <AiForm enabled={ai.enabled} provider={ai.provider} providers={providers} ready={ready} />
     </main>
   );
 }

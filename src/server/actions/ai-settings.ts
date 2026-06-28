@@ -11,25 +11,29 @@ export async function updateAiAction(_prev: AiState, formData: FormData): Promis
   const current = await getAiSettings();
 
   const enabled = formData.get("enabled") === "on";
+  const provider = String(formData.get("provider") ?? "google-vision");
   const raw = String(formData.get("credentials") ?? "").trim();
   const clear = formData.get("clear") === "on";
 
-  let googleCredentials = current.googleCredentials;
+  const apiKeys = { ...current.apiKeys };
   if (clear) {
-    googleCredentials = null;
+    delete apiKeys[provider];
   } else if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      if (!parsed.client_email || !parsed.private_key) {
-        return { error: "El JSON no parece un service account (faltan client_email/private_key)." };
+    // Para Google validamos que sea un service account JSON.
+    if (provider === "google-vision") {
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed.client_email || !parsed.private_key) {
+          return { error: "El JSON no parece un service account (faltan client_email/private_key)." };
+        }
+      } catch {
+        return { error: "El JSON de credenciales no es válido." };
       }
-      googleCredentials = raw;
-    } catch {
-      return { error: "El JSON de credenciales no es válido." };
     }
+    apiKeys[provider] = raw;
   }
 
-  await setAiSettings({ enabled, googleCredentials }, actor.id);
+  await setAiSettings({ enabled, provider, apiKeys }, actor.id);
   revalidatePath("/superadmin/ia");
   return { ok: true };
 }

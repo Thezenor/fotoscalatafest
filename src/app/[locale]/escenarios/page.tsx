@@ -19,7 +19,7 @@ export default async function StagesPage({
 
   return (
     <main className="w-full flex-1 pb-10">
-      <SiteNav labels={{ gallery: tc("viewGallery"), upload: tc("uploadPhoto") }} />
+      <SiteNav />
 
       {/* Cabecera móvil */}
       <div className="lg:hidden">
