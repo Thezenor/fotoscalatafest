@@ -1,0 +1,43 @@
+{
+  "common": {
+    "appName": "Calatafest Fotos",
+    "loading": "Cargando…",
+    "back": "Volver",
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "language": "Idioma"
+  },
+  "home": {
+    "title": "Calatafest Fotos",
+    "subtitle": "Comparte y revive el festival a través de vuestras fotos.",
+    "scanPrompt": "Escanea el QR del evento para empezar."
+  },
+  "event": {
+    "chooseStage": "Elige el escenario donde estás",
+    "uploadCta": "Sube tu foto",
+    "galleryCta": "Ver galería"
+  },
+  "consent": {
+    "title": "Antes de subir tu foto",
+    "rights": "Cedo los derechos de uso de las fotos al festival según los términos.",
+    "adult": "Confirmo que soy mayor de edad y que no aparecen menores en la foto.",
+    "termsLink": "Leer términos y condiciones",
+    "accept": "Acepto y continúo",
+    "required": "Debes aceptar ambas condiciones para subir fotos."
+  },
+  "upload": {
+    "title": "Sube tu foto",
+    "selectFile": "Seleccionar foto",
+    "uploading": "Subiendo…",
+    "pendingNotice": "Foto recibida. Quedará pendiente de aprobación antes de publicarse."
+  },
+  "gallery": {
+    "title": "Galería",
+    "empty": "Todavía no hay fotos aprobadas."
+  },
+  "legal": {
+    "termsTitle": "Términos y condiciones",
+    "privacyTitle": "Política de privacidad"
+  }
+}

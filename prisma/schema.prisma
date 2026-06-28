@@ -1,0 +1,176 @@
+// Calatafest Fotos — Esquema de base de datos (Fase 0/1)
+// Documentación: ver DATABASE.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────── Enums ───────────────────────────
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  MODERATOR
+}
+
+enum PhotoStatus {
+  PENDING // estado por defecto al subir
+  AI_FLAGGED // la IA detectó algo dudoso → revisión humana forzada
+  AI_APPROVED // IA limpia, pendiente de aprobación manual
+  APPROVED // visible en galería pública y live
+  REJECTED
+}
+
+enum AiVerdict {
+  PENDING
+  CLEAN
+  NSFW
+  VIOLENCE
+  MINOR_SUSPECTED // SafeSearch + FaceDetection → posible menor
+  ERROR
+}
+
+// ─────────────────────────── Modelos ───────────────────────────
+
+model Event {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  name          String
+  description   String?
+  isActive      Boolean @default(true)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  // QR único de ACCESO al evento
+  accessQrToken String  @unique @default(cuid())
+
+  // Configuración de marca de agua (por evento)
+  watermarkEnabled  Boolean @default(true)
+  watermarkLogoUrl  String?
+  watermarkPosition String  @default("bottom-right")
+  watermarkOpacity  Float   @default(0.5)
+
+  // Configuración de moderación
+  // Si true: foto con IA limpia se aprueba automáticamente.
+  // Si false (por defecto): IA limpia queda pendiente de revisión manual.
+  autoApproveOnAiClean Boolean @default(false)
+
+  stages    Stage[]
+  photos    Photo[]
+  consents  Consent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model Stage {
+  id        String  @id @default(cuid())
+  eventId   String
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String
+  slug      String
+  bannerUrl String?
+  order     Int     @default(0)
+  photos    Photo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, slug])
+}
+
+model Photo {
+  id      String      @id @default(cuid())
+  eventId String
+  event   Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  stageId String?
+  stage   Stage?      @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  status  PhotoStatus @default(PENDING)
+
+  // Claves en el storage (volumen Railway de momento, vía StorageService)
+  originalKey    String
+  watermarkedKey String?
+  thumbnailKey   String?
+  width          Int?
+  height         Int?
+  mimeType       String?
+  sizeBytes      Int?
+
+  // Moderación IA
+  aiVerdict    AiVerdict @default(PENDING)
+  aiScore      Json? // scores por categoría devueltos por Google Vision
+  aiReviewedAt DateTime?
+
+  // Moderación manual
+  moderatedById String?
+  moderatedBy   User?     @relation(fields: [moderatedById], references: [id], onDelete: SetNull)
+  moderatedAt   DateTime?
+  rejectReason  String?
+
+  // QR de descarga INDIVIDUAL (se genera al aprobar)
+  downloadQrToken String? @unique
+
+  // Consentimiento legal asociado
+  consentId String?
+  consent   Consent? @relation(fields: [consentId], references: [id], onDelete: SetNull)
+
+  // Anti-spam / forense
+  uploaderIp   String?
+  uploaderHash String? // fingerprint anónimo del subidor
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId, status])
+  @@index([status, createdAt])
+}
+
+model Consent {
+  id             String   @id @default(cuid())
+  eventId        String
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  termsVersion   String
+  acceptedRights Boolean // cesión de derechos
+  confirmedAdult Boolean // mayor de edad + sin menores
+  ip             String?
+  userAgent      String?
+  acceptedAt     DateTime @default(now())
+  photos         Photo[]
+
+  @@index([eventId])
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String?
+  passwordHash String?
+  role         Role       @default(MODERATOR)
+  isActive     Boolean    @default(true)
+  moderated    Photo[]
+  auditLogs    AuditLog[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String // p.ej. PHOTO_APPROVED, LOGIN, EVENT_EXPORT
+  entityType String // Photo, Event, User, Consent…
+  entityId   String?
+  metadata   Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+  @@index([createdAt])
+}
