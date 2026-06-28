@@ -65,7 +65,7 @@ function watermarkSvg(imgW: number, imgH: number, opacity: number): Buffer {
       <g opacity="${opacity}" transform="translate(${pad},${pad})" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6))">
         <g transform="scale(${scale})">${MASCOT}</g>
         <text x="${mascotW + gap}" y="${Math.round(markH * 0.78)}"
-              font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}"
+              font-family="DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif" font-size="${fontSize}"
               font-weight="700" fill="#ffffff" letter-spacing="0.5">${text}</text>
       </g>
     </svg>`);

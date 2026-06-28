@@ -1,0 +1,8 @@
+# Configuración de build de Nixpacks (Railway).
+# Instala fuentes en el contenedor para que sharp/librsvg rendericen el texto
+# de la marca de agua (si no, el wordmark sale como cuadraditos "tofu").
+[phases.setup]
+aptPkgs = ["fontconfig", "fonts-dejavu-core", "fonts-liberation"]
+
+[phases.build]
+cmds = ["npx prisma generate", "npm run build"]
