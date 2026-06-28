@@ -46,6 +46,10 @@ gcp-vision.json
 # Material audiovisual de marca (pesado, fuera de git)
 /Nueva carpeta/
 
+# Logs y temporales locales
+dev.log
+_verify.ts
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

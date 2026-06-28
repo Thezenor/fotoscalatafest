@@ -1,0 +1,34 @@
+# Entorno de desarrollo local: PostgreSQL + Redis.
+# Espeja los servicios que en producción provee Railway.
+# Uso: docker compose up -d
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: calatafest-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: calatafest
+    ports:
+      - "5434:5432"
+    volumes:
+      - calatafest_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d calatafest"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: calatafest-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - calatafest_redisdata:/data
+
+volumes:
+  calatafest_pgdata:
+  calatafest_redisdata:

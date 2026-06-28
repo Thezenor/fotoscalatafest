@@ -57,11 +57,27 @@ Bitácora inmutable de toda acción relevante: `action`, `entityType`, `entityId
 `Photo(eventId,status)`, `Photo(status,createdAt)` para la cola de moderación y galerías;
 `AuditLog(entityType,entityId)` y `(action,createdAt)` para trazabilidad.
 
+## Desarrollo local (Docker)
+
+PostgreSQL y Redis se levantan con [docker-compose.yml](docker-compose.yml):
+
+```bash
+docker compose up -d        # postgres en localhost:5434, redis en 6379
+npx prisma migrate deploy   # aplica migraciones
+npm run db:seed             # superadmin + evento de ejemplo
+```
+
+> El puerto host de Postgres es **5434** (el 5432/5433 estaban ocupados por otros proyectos).
+> Ajusta `DATABASE_URL` en tu `.env` en consecuencia.
+
 ## Migraciones
 
-- Desarrollo: `npm run db:migrate`
+- Desarrollo: `npm run db:migrate` (crea nuevas migraciones) o `prisma migrate deploy` (aplica).
 - Producción (Railway): `npm run db:deploy` (en el paso de release/start).
 - Datos iniciales: `npm run db:seed` (crea superadmin y un evento de ejemplo).
+
+> En local, los comandos Prisma requieren `NODE_EXTRA_CA_CERTS` apuntando al bundle de
+> certificados (ver RAILWAY_DEPLOY.md, sección entorno local / Avast).
 
 > Nota: en esta máquina `prisma generate` está bloqueado por la intercepción TLS de Avast.
 > Se ejecuta correctamente en Railway (Linux). Ver RAILWAY_DEPLOY.md.
