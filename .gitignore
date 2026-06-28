@@ -56,3 +56,6 @@ _verify.ts
 next-env.d.ts
 
 .railway-secrets.txt
+
+migdiff.log
+dev.log
