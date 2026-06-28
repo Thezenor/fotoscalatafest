@@ -47,7 +47,7 @@ export default async function LivePage({
     <LiveStage
       photos={pool}
       featured={featured}
-      variant={VALID.has(v) ? v : "cinematic"}
+      variant={VALID.has(v) ? v : "destacadas"}
       locale={locale}
       landingUrl={landingUrl}
       sponsors={branding.sponsors}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
@@ -94,14 +95,13 @@ export function LiveStage({
     );
   }
 
-  // ── Plantillas a pantalla completa ──
+  // ──────────────── Plantillas dinámicas (pantalla completa) ────────────────
   if (variant === "cinematic") {
     return (
       <Screen>
         <HeroPhoto photo={current} />
         <div className="overlay-vert absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/20" />
-        {/* barrido de luz */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="animate-sweep absolute top-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </div>
@@ -136,12 +136,10 @@ export function LiveStage({
       <Screen>
         <HeroPhoto photo={current} />
         <div className="overlay-vert absolute inset-0" />
-        {/* scanlines */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.12]"
           style={{ backgroundImage: "repeating-linear-gradient(0deg, #000 0px, #000 2px, transparent 2px, transparent 4px)" }}
         />
-        {/* marco brillante */}
         <div className="animate-glow pointer-events-none absolute inset-5 rounded-xl" />
 
         <div className="absolute left-10 top-9 flex items-center gap-3">
@@ -174,9 +172,10 @@ export function LiveStage({
     );
   }
 
-  // ── Plantillas con marco (top bar + footer) ──
+  // ──────────────── Plantillas clásicas (marco: top bar + footer) ────────────────
   return (
     <div className="flex h-dvh w-screen flex-col bg-ink-pure text-white">
+      {/* TOP BAR */}
       <div className="flex h-[78px] items-center justify-between bg-gradient-to-b from-black/80 to-transparent px-8">
         <Logo size={42} wordSize={28} />
         <div className="flex items-center gap-3">
@@ -188,52 +187,38 @@ export function LiveStage({
         </span>
       </div>
 
+      {/* BODY */}
       <div className="flex min-h-0 flex-1 gap-[22px] p-6">
-        {variant === "stack" && (
-          <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-surface to-ink-pure">
-            <StackDeck photos={livePhotos} index={index} title={title} sub={sub} handle={handle} />
-            {showQr && (
-              <div className="absolute right-6 top-6">
-                <ScanCard landingUrl={landingUrl} labels={labels} size={96} />
-              </div>
-            )}
+        {variant === "carrusel" && (
+          <div className="relative flex-1 overflow-hidden rounded-md">
+            <PhotoLayer photo={current} kenBurns />
+            <CornerQR landingUrl={landingUrl} labels={labels} show={showQr} />
+            <HeroCaption title={title(current)} sub={sub(current)} handle={handle(current)} code={current.printCode} />
           </div>
         )}
 
         {variant === "mosaico" && (
           <div className="relative grid flex-1 grid-cols-3 grid-rows-3 gap-2.5">
-            {livePhotos.slice(0, 9).map((p, i) => {
-              const active = i === index % Math.min(9, livePhotos.length || 1);
-              return (
-                <div
-                  key={p.id}
-                  className={cn(
-                    "relative overflow-hidden rounded-sm transition-all duration-700",
-                    active ? "z-10 scale-[1.04] ring-4 ring-brand shadow-[0_0_40px_rgba(249,180,26,0.5)]" : "opacity-60",
-                  )}
-                  style={{ backgroundImage: `url(${p.url})`, backgroundSize: "cover", backgroundPosition: "center" }}
-                >
-                  {active && p.printCode && (
-                    <span className="absolute left-2 top-2 rounded-pill bg-brand px-2.5 py-0.5 font-mono text-[13px] font-bold text-brand-ink">
-                      #{p.printCode}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-            {showQr && (
-              <div className="absolute right-5 top-5 z-20">
-                <ScanCard landingUrl={landingUrl} labels={labels} size={88} />
+            {livePhotos.slice(0, 9).map((p, i) => (
+              <div
+                key={p.id}
+                className={cn(
+                  "relative overflow-hidden rounded-sm transition-all duration-700",
+                  i === index % Math.min(9, livePhotos.length || 1) && "z-10 ring-2 ring-brand",
+                )}
+              >
+                <PhotoLayer photo={p} />
               </div>
-            )}
+            ))}
+            <CornerQR landingUrl={landingUrl} labels={labels} show={showQr} />
           </div>
         )}
 
-        {variant === "destacadas" && (
+        {/* destacadas (por defecto, también si la variante no coincide) */}
+        {variant !== "carrusel" && variant !== "mosaico" && variant !== "stack" && (
           <>
             <div className="relative flex-[1.55] overflow-hidden rounded-md">
-              <HeroPhoto photo={current} />
-              <div className="overlay-vert absolute inset-0" />
+              <PhotoLayer photo={current} kenBurns />
               <HeroCaption title={title(current)} sub={sub(current)} handle={handle(current)} code={current.printCode} />
             </div>
             <div className="flex flex-1 flex-col gap-5">
@@ -249,24 +234,29 @@ export function LiveStage({
               <p className="font-mono text-[13px] uppercase tracking-[0.2em] text-mist-2">{labels.featuredNow}</p>
               <div className="grid flex-1 grid-cols-3 gap-3">
                 {(liveFeatured.length ? liveFeatured : livePhotos).slice(0, 3).map((p) => (
-                  <div
-                    key={p.id}
-                    className="animate-tv-fade relative overflow-hidden rounded-sm bg-cover bg-center"
-                    style={{ backgroundImage: `url(${p.url})` }}
-                  >
-                    {p.printCode && (
-                      <span className="absolute left-1.5 top-1.5 rounded-pill bg-brand/90 px-2 py-0.5 font-mono text-[10px] font-bold text-brand-ink">
-                        #{p.printCode}
-                      </span>
-                    )}
+                  <div key={p.id} className="relative overflow-hidden rounded-sm">
+                    <PhotoLayer photo={p} />
                   </div>
                 ))}
               </div>
             </div>
           </>
         )}
+
+        {/* stack (polaroid) */}
+        {variant === "stack" && (
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-surface to-ink-pure">
+            <StackDeck photos={livePhotos} index={index} title={title} sub={sub} handle={handle} />
+            {showQr && (
+              <div className="absolute right-6 top-6">
+                <ScanCard landingUrl={landingUrl} labels={labels} size={96} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* FOOTER */}
       <div className="flex h-[96px] items-center justify-between border-t border-surface-2 bg-ink px-8">
         <div className="flex flex-col gap-1.5">
           <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-mist-2">{labels.sponsors}</span>
@@ -288,7 +278,21 @@ function Screen({ children }: { children: React.ReactNode }) {
   return <div className="relative h-dvh w-screen overflow-hidden bg-ink-pure text-white">{children}</div>;
 }
 
-/** Foto a pantalla completa con crossfade entre tomas + zoom lento (Ken Burns). */
+/** Foto clásica (next/image) con zoom lento opcional. */
+function PhotoLayer({ photo, kenBurns }: { photo: Photo; kenBurns?: boolean }) {
+  return (
+    <Image
+      src={photo.url}
+      alt={photo.stageName}
+      fill
+      sizes="100vw"
+      className={cn("object-cover", kenBurns && "animate-kenburns")}
+      priority
+    />
+  );
+}
+
+/** Foto a pantalla completa con crossfade entre tomas + zoom lento (dinámicas). */
 function HeroPhoto({ photo }: { photo: Photo }) {
   const seq = useRef(0);
   const [layers, setLayers] = useState<{ k: number; url: string }[]>([{ k: 0, url: photo.url }]);
@@ -303,10 +307,7 @@ function HeroPhoto({ photo }: { photo: Photo }) {
     <div className="absolute inset-0 overflow-hidden bg-ink-pure">
       {layers.map((l, i) => (
         <div key={l.k} className={cn("absolute inset-0", i === layers.length - 1 && "animate-tv-fade")}>
-          <div
-            className="animate-tv-zoom h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${l.url})` }}
-          />
+          <div className="animate-tv-zoom h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${l.url})` }} />
         </div>
       ))}
     </div>
@@ -339,15 +340,30 @@ function ScanCard({ landingUrl, labels, size = 110 }: { landingUrl: string; labe
   );
 }
 
+function CornerQR({ landingUrl, labels, show = true }: { landingUrl: string; labels: LiveLabels; show?: boolean }) {
+  if (!show) return null;
+  return (
+    <div className="absolute right-5 top-5 flex items-center gap-3 rounded-md bg-white p-3">
+      <QRCodeSVG value={landingUrl} size={84} fgColor="#0E0E0E" bgColor="#fff" />
+      <div className="pr-1">
+        <p className="font-display text-[17px] font-bold leading-tight text-ink">{labels.scanTitle}</p>
+        <p className="font-body text-[12px] text-[#444]">{labels.scanCaption}</p>
+      </div>
+    </div>
+  );
+}
+
 function SponsorMarquee({ sponsors, labels }: { sponsors: string[]; labels: LiveLabels }) {
   const loop = [...sponsors, ...sponsors];
   return (
-    <div className="absolute inset-x-0 bottom-0 flex items-center gap-6 overflow-hidden border-t border-white/10 bg-black/50 py-3 backdrop-blur">
-      <span className="shrink-0 pl-8 font-mono text-[11px] uppercase tracking-[0.28em] text-brand">{labels.sponsors}</span>
-      <div className="animate-marquee flex shrink-0 items-center gap-10 whitespace-nowrap">
-        {loop.map((s, i) => (
-          <span key={`${s}-${i}`} className="font-body text-[16px] font-semibold text-white/85">{s}</span>
-        ))}
+    <div className="absolute inset-x-0 bottom-0 flex items-center border-t border-white/10 bg-black/55 py-3 backdrop-blur">
+      <span className="shrink-0 px-8 font-mono text-[11px] uppercase tracking-[0.28em] text-brand">{labels.sponsors}</span>
+      <div className="relative flex-1 overflow-hidden">
+        <div className="animate-marquee flex w-max items-center gap-10 whitespace-nowrap">
+          {loop.map((s, i) => (
+            <span key={`${s}-${i}`} className="font-body text-[16px] font-semibold text-white/85">{s}</span>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -370,15 +386,11 @@ function StackDeck({
   const n = photos.length;
   if (!n) return null;
   const at = (off: number) => photos[((index - off) % n + n) % n];
-  const back2 = at(2);
-  const back1 = at(1);
   const front = at(0);
   return (
     <div className="relative h-[78%] w-[58%]">
-      {/* tarjetas traseras */}
-      <Card photo={back2} className="-rotate-6 scale-90 opacity-40" />
-      <Card photo={back1} className="rotate-3 scale-95 opacity-70" />
-      {/* tarjeta frontal (animada al cambiar) */}
+      <Card photo={at(2)} className="-rotate-6 scale-90 opacity-40" />
+      <Card photo={at(1)} className="rotate-3 scale-95 opacity-70" />
       <div key={front.id} className="animate-tv-card absolute inset-0">
         <Card photo={front} front title={title(front)} sub={sub(front)} handle={handle(front)} />
       </div>
@@ -428,6 +440,7 @@ function Card({
 function HeroCaption({ title, sub, handle, code }: { title: string; sub: string; handle: string; code?: string }) {
   return (
     <>
+      <div className="overlay-vert absolute inset-0" />
       {code && (
         <span className="absolute left-5 top-5 rounded-pill bg-brand px-4 py-1.5 font-mono text-[18px] font-bold text-brand-ink">
           #{code}

@@ -155,7 +155,7 @@ export interface TvConfig {
   showQr: boolean; // mostrar QR "sube tu foto"
 }
 const DEFAULT_TV: TvConfig = {
-  template: "cinematic",
+  template: "destacadas",
   intervalMs: 5000,
   showSponsors: true,
   showQr: true,
