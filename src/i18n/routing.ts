@@ -6,7 +6,8 @@ import { defineRouting } from "next-intl/routing";
  * Añadir más idiomas = añadir el código aquí + su archivo en /messages.
  */
 export const routing = defineRouting({
-  locales: ["es", "en"],
+  // ES base (completo) + EN + CA (preparados). Ver 07-I18N-LEGAL.md.
+  locales: ["es", "en", "ca"],
   defaultLocale: "es",
   localePrefix: "as-needed",
 });

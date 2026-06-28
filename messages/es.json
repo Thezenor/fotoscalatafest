@@ -1,51 +1,110 @@
 {
   "common": {
     "appName": "Calatafest Fotos",
+    "uploadPhoto": "Subir mi foto",
+    "viewGallery": "Ver galería",
+    "share": "Compartir",
+    "download": "Descargar",
+    "back": "Atrás",
     "loading": "Cargando…",
-    "back": "Volver",
     "continue": "Continuar",
     "cancel": "Cancelar",
     "save": "Guardar",
     "language": "Idioma"
   },
-  "home": {
-    "title": "Calatafest Fotos",
-    "subtitle": "Comparte y revive el festival a través de vuestras fotos.",
-    "scanPrompt": "Escanea el QR del evento para empezar."
+  "landing": {
+    "eyebrow": "Revive el festival",
+    "title": "Tus fotos del Calatafest",
+    "subtitle": "Escanea, sube tu foto y revive la noche. Las mejores se proyectan en las pantallas del recinto.",
+    "marquee": "Calatafest Fotos · 3—4 Julio 2026 · Sube tus fotos del festival ·",
+    "chooseStage": "Elige tu escenario",
+    "seeAll": "Ver todos",
+    "sponsors": "Con el apoyo de"
   },
-  "event": {
-    "chooseStage": "Elige el escenario donde estás",
-    "uploadCta": "Sube tu foto",
-    "galleryCta": "Ver galería",
-    "accessDenied": "Acceso no válido. Escanea el QR oficial del evento para entrar.",
-    "scanToAccess": "Escanea el QR del evento para acceder.",
-    "inactive": "Este evento no está disponible en este momento.",
-    "noStages": "Aún no hay escenarios configurados."
-  },
-  "consent": {
-    "title": "Antes de subir tu foto",
-    "rights": "Cedo los derechos de uso de las fotos al festival según los términos.",
-    "adult": "Confirmo que soy mayor de edad y que no aparecen menores en la foto.",
-    "termsLink": "Leer términos y condiciones",
-    "accept": "Acepto y continúo",
-    "required": "Debes aceptar ambas condiciones para subir fotos."
+  "selector": {
+    "title": "Elige escenario",
+    "subtitle": "¿Dónde estás ahora mismo?",
+    "cta": "Subir foto aquí"
   },
   "upload": {
     "title": "Sube tu foto",
-    "selectFile": "Seleccionar foto",
-    "uploading": "Subiendo…",
+    "tabCamera": "Cámara",
+    "tabGallery": "Galería",
+    "emptyCamera": "Toca para hacer una foto",
+    "emptyGallery": "Elige de tu galería",
+    "preview": "Vista previa",
+    "name": "Tu nombre (opcional)",
+    "instagram": "@ Instagram",
+    "tiktok": "@ TikTok",
+    "comment": "Comentario (opcional)",
+    "legalRights": "Acepto los términos de uso y la cesión de derechos de imagen de mi foto.",
+    "legalAge": "Confirmo que soy mayor de 18 años o cuento con autorización.",
+    "submit": "Enviar foto",
+    "submitting": "Enviando…",
     "pendingNotice": "Foto recibida. Quedará pendiente de aprobación antes de publicarse.",
     "stage": "Escenario: {stage}",
     "consentOk": "Consentimiento registrado. ¡Ya puedes subir tus fotos!",
     "comingSoon": "La subida de fotos se activa en la Fase 3."
   },
+  "confirm": {
+    "title": "¡Foto enviada!",
+    "message": "Acabas de hacer historia en Calatafest. Gracias por compartir tu momento.",
+    "status": "En revisión · aprobación en minutos"
+  },
   "gallery": {
     "title": "Galería",
-    "empty": "Todavía no hay fotos aprobadas."
+    "featured": "Destacada",
+    "filters": {
+      "all": "Todos",
+      "friday": "Viernes",
+      "saturday": "Sábado"
+    },
+    "empty": "Aún no hay fotos de este escenario"
   },
-  "legal": {
-    "termsTitle": "Términos y condiciones",
-    "privacyTitle": "Política de privacidad"
+  "photo": {
+    "scanToDownload": "Escanea para descargar",
+    "scanCaption": "Llévate tu foto en alta calidad a tu móvil.",
+    "requestRemoval": "Solicitar retirada de esta foto"
+  },
+  "live": {
+    "liveNow": "Fotos en directo",
+    "scanTitle": "Sube tu foto",
+    "scanCaption": "Escanea y aparece en esta pantalla",
+    "featuredNow": "Destacadas ahora",
+    "sponsors": "Patrocinadores"
+  },
+  "admin": {
+    "moderation": "Moderación de fotos",
+    "subtitle": "Calatafest 2026 · Viernes, 3 de julio",
+    "search": "Buscar",
+    "pending": "Pendientes",
+    "approved": "Aprobadas",
+    "uploadedToday": "Subidas hoy",
+    "onScreen": "En pantalla",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "feature": "Destacar",
+    "sendToScreen": "Enviar a pantalla",
+    "sendSelection": "Enviar selección a pantalla",
+    "inQueue": "En cola",
+    "todayOk": "Hoy OK",
+    "nav": {
+      "dashboard": "Dashboard",
+      "moderation": "Moderación",
+      "featured": "Destacadas",
+      "live": "Pantalla Live",
+      "stages": "Escenarios",
+      "settings": "Ajustes"
+    },
+    "toastApproved": "Foto aprobada",
+    "toastRejected": "Foto rechazada",
+    "toastFeatured": "Foto destacada",
+    "toastOnScreen": "Enviada a pantalla",
+    "undo": "Deshacer",
+    "queueEmpty": "No hay fotos pendientes. ¡Buen trabajo!",
+    "welcome": "Bienvenido/a, {name}",
+    "role": "Rol: {role}",
+    "title": "Panel de moderación"
   },
   "auth": {
     "loginTitle": "Acceso al panel",
@@ -57,9 +116,25 @@
     "invalid": "Credenciales incorrectas.",
     "error": "No se pudo iniciar sesión. Inténtalo de nuevo."
   },
-  "admin": {
-    "title": "Panel de moderación",
-    "welcome": "Bienvenido/a, {name}",
-    "role": "Rol: {role}"
+  "consent": {
+    "title": "Antes de subir tu foto",
+    "rights": "Cedo los derechos de uso de las fotos al festival según los términos.",
+    "adult": "Confirmo que soy mayor de edad y que no aparecen menores en la foto.",
+    "termsLink": "Leer términos y condiciones",
+    "accept": "Acepto y continúo",
+    "required": "Debes aceptar ambas condiciones para subir fotos."
+  },
+  "event": {
+    "chooseStage": "Elige el escenario donde estás",
+    "uploadCta": "Sube tu foto",
+    "galleryCta": "Ver galería",
+    "accessDenied": "Acceso no válido. Escanea el QR oficial del evento para entrar.",
+    "scanToAccess": "Escanea el QR del evento para acceder.",
+    "inactive": "Este evento no está disponible en este momento.",
+    "noStages": "Aún no hay escenarios configurados."
+  },
+  "legal": {
+    "termsTitle": "Términos y condiciones",
+    "privacyTitle": "Política de privacidad"
   }
 }

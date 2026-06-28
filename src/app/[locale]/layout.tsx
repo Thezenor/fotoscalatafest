@@ -1,25 +1,32 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fredoka, Hanken_Grotesk, Chakra_Petch } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Display redondeada (titulares/botones), cuerpo limpio, técnica para badges.
+const fredoka = Fredoka({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-fredoka",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-hanken",
+});
+const chakra = Chakra_Petch({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-chakra",
 });
 
 export const metadata: Metadata = {
   title: "Calatafest Fotos",
   description:
-    "Comparte y revive el festival a través de vuestras fotos. Plataforma oficial de fotos de Calatafest.",
+    "Escanea, sube tu foto y revive la noche. Plataforma oficial de fotos del festival Calatafest.",
 };
 
 export function generateStaticParams() {
@@ -42,9 +49,9 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fredoka.variable} ${hanken.variable} ${chakra.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-ink text-white font-body antialiased">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

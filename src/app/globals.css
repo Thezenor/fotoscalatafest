@@ -1,55 +1,136 @@
 @import "tailwindcss";
 
 /*
- * Theme base Calatafest — PROVISIONAL.
- * Paleta pendiente de ajustar tras inspeccionar https://www.calatafest.es
- * (colores corporativos, tipografía y tono). Festival nocturno → base oscura
- * con acento vibrante. Centralizado en tokens para re-theming sin tocar componentes.
+ * CALATAFEST FOTOS — Sistema de diseño (hi-fi, ver 01-DESIGN-SYSTEM.md).
+ * Modo oscuro permanente. Fondo negro + foto + UN SOLO acento amarillo #F9B41A.
  */
-:root {
-  --background: #0b0712;
-  --foreground: #f5f3ff;
-  --card: #15101f;
-  --card-foreground: #f5f3ff;
-  --primary: #e0218a; /* magenta festival (provisional) */
-  --primary-foreground: #ffffff;
-  --secondary: #7c3aed; /* violeta */
-  --secondary-foreground: #ffffff;
-  --accent: #22d3ee; /* cian eléctrico */
-  --accent-foreground: #06121a;
-  --muted: #1c1726;
-  --muted-foreground: #a89fc0;
-  --border: #2a2238;
-  --ring: #e0218a;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --radius: 0.75rem;
+@theme {
+  /* Color */
+  --color-brand: #f9b41a;
+  --color-brand-ink: #0e0e0e;
+  --color-ink: #0e0e0e;
+  --color-ink-pure: #0a0a0a;
+  --color-surface: #161616;
+  --color-surface-2: #1f1f1f;
+  --color-line: #2b2b2b;
+  --color-white: #ffffff;
+  --color-mist: #a8a8a8;
+  --color-mist-2: #777777;
+  --color-success: #22c55e;
+  --color-success-ink: #06210f;
+  --color-danger: #ef4444;
+
+  /* Tipografía (variables de next/font) */
+  --font-display: var(--font-fredoka), system-ui, sans-serif;
+  --font-body: var(--font-hanken), system-ui, sans-serif;
+  --font-mono: var(--font-chakra), ui-monospace, monospace;
+
+  /* Radios */
+  --radius-pill: 999px;
+  --radius-xl: 24px;
+  --radius-lg: 20px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
+  --radius-xs: 11px;
+
+  /* Sombras */
+  --shadow-card: 0 30px 70px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 0 12px rgba(249, 180, 26, 0.12);
+
+  /* Animaciones */
+  --animate-marquee: marquee 16s linear infinite;
+  --animate-kenburns: kenburns 7s ease-in-out infinite alternate;
+  --animate-pulse-soft: pulseSoft 1.4s ease-in-out infinite;
+  --animate-pop: pop 0.5s ease both;
+  --animate-fade-in: fadeIn 0.6s ease both;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --color-ring: var(--ring);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --radius-lg: var(--radius);
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+@keyframes pulseSoft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utilidad: overlay de legibilidad vertical sobre foto. */
+.overlay-vert {
+  background: linear-gradient(180deg, transparent 40%, rgba(14, 14, 14, 0.92));
+}
+.overlay-horiz {
+  background: linear-gradient(90deg, rgba(14, 14, 14, 0.85), rgba(14, 14, 14, 0.1));
+}
+.glow-confirm {
+  background: radial-gradient(120% 80% at 50% 30%, rgba(249, 180, 26, 0.14), transparent 60%);
+}
+
+/* Ocultar scrollbar en filas de chips/scroll horizontal. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Respeta prefers-reduced-motion: anula animaciones decorativas. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

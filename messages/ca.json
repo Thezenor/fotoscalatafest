@@ -1,0 +1,140 @@
+{
+  "common": {
+    "appName": "Calatafest Fotos",
+    "uploadPhoto": "Pujar la meva foto",
+    "viewGallery": "Veure galeria",
+    "share": "Compartir",
+    "download": "Descarregar",
+    "back": "Enrere",
+    "loading": "Carregant…",
+    "continue": "Continuar",
+    "cancel": "Cancel·lar",
+    "save": "Desar",
+    "language": "Idioma"
+  },
+  "landing": {
+    "eyebrow": "Reviu el festival",
+    "title": "Les teves fotos del Calatafest",
+    "subtitle": "Escaneja, puja la teva foto i reviu la nit. Les millors es projecten a les pantalles del recinte.",
+    "marquee": "Calatafest Fotos · 3—4 Juliol 2026 · Puja les teves fotos del festival ·",
+    "chooseStage": "Tria el teu escenari",
+    "seeAll": "Veure'ls tots",
+    "sponsors": "Amb el suport de"
+  },
+  "selector": {
+    "title": "Tria escenari",
+    "subtitle": "On ets ara mateix?",
+    "cta": "Pujar foto aquí"
+  },
+  "upload": {
+    "title": "Puja la teva foto",
+    "tabCamera": "Càmera",
+    "tabGallery": "Galeria",
+    "emptyCamera": "Toca per fer una foto",
+    "emptyGallery": "Tria de la teva galeria",
+    "preview": "Vista prèvia",
+    "name": "El teu nom (opcional)",
+    "instagram": "@ Instagram",
+    "tiktok": "@ TikTok",
+    "comment": "Comentari (opcional)",
+    "legalRights": "Accepto els termes d'ús i la cessió de drets d'imatge de la meva foto.",
+    "legalAge": "Confirmo que soc major de 18 anys o tinc autorització.",
+    "submit": "Enviar foto",
+    "submitting": "Enviant…",
+    "pendingNotice": "Foto rebuda. Quedarà pendent d'aprovació abans de publicar-se.",
+    "stage": "Escenari: {stage}",
+    "consentOk": "Consentiment registrat. Ja pots pujar les teves fotos!",
+    "comingSoon": "La pujada de fotos s'activa a la Fase 3."
+  },
+  "confirm": {
+    "title": "Foto enviada!",
+    "message": "Acabes de fer història al Calatafest. Gràcies per compartir el teu moment.",
+    "status": "En revisió · aprovació en minuts"
+  },
+  "gallery": {
+    "title": "Galeria",
+    "featured": "Destacada",
+    "filters": {
+      "all": "Tots",
+      "friday": "Divendres",
+      "saturday": "Dissabte"
+    },
+    "empty": "Encara no hi ha fotos d'aquest escenari"
+  },
+  "photo": {
+    "scanToDownload": "Escaneja per descarregar",
+    "scanCaption": "Emporta't la teva foto en alta qualitat al mòbil.",
+    "requestRemoval": "Sol·licitar la retirada d'aquesta foto"
+  },
+  "live": {
+    "liveNow": "Fotos en directe",
+    "scanTitle": "Puja la teva foto",
+    "scanCaption": "Escaneja i apareix en aquesta pantalla",
+    "featuredNow": "Destacades ara",
+    "sponsors": "Patrocinadors"
+  },
+  "admin": {
+    "moderation": "Moderació de fotos",
+    "subtitle": "Calatafest 2026 · Divendres, 3 de juliol",
+    "search": "Cercar",
+    "pending": "Pendents",
+    "approved": "Aprovades",
+    "uploadedToday": "Pujades avui",
+    "onScreen": "A pantalla",
+    "approve": "Aprovar",
+    "reject": "Rebutjar",
+    "feature": "Destacar",
+    "sendToScreen": "Enviar a pantalla",
+    "sendSelection": "Enviar selecció a pantalla",
+    "inQueue": "A la cua",
+    "todayOk": "Avui OK",
+    "nav": {
+      "dashboard": "Dashboard",
+      "moderation": "Moderació",
+      "featured": "Destacades",
+      "live": "Pantalla Live",
+      "stages": "Escenaris",
+      "settings": "Ajustos"
+    },
+    "toastApproved": "Foto aprovada",
+    "toastRejected": "Foto rebutjada",
+    "toastFeatured": "Foto destacada",
+    "toastOnScreen": "Enviada a pantalla",
+    "undo": "Desfer",
+    "queueEmpty": "No hi ha fotos pendents. Bona feina!",
+    "welcome": "Benvingut/da, {name}",
+    "role": "Rol: {role}",
+    "title": "Panell de moderació"
+  },
+  "auth": {
+    "loginTitle": "Accés al panell",
+    "loginSubtitle": "Només personal autoritzat.",
+    "email": "Email",
+    "password": "Contrasenya",
+    "signIn": "Entrar",
+    "signOut": "Tancar sessió",
+    "invalid": "Credencials incorrectes.",
+    "error": "No s'ha pogut iniciar sessió. Torna-ho a provar."
+  },
+  "consent": {
+    "title": "Abans de pujar la teva foto",
+    "rights": "Cedeixo els drets d'ús de les fotos al festival segons els termes.",
+    "adult": "Confirmo que soc major d'edat i que no apareixen menors a la foto.",
+    "termsLink": "Llegir termes i condicions",
+    "accept": "Accepto i continuo",
+    "required": "Has d'acceptar les dues condicions per pujar fotos."
+  },
+  "event": {
+    "chooseStage": "Tria l'escenari on ets",
+    "uploadCta": "Puja la teva foto",
+    "galleryCta": "Veure galeria",
+    "accessDenied": "Accés no vàlid. Escaneja el QR oficial de l'esdeveniment per entrar.",
+    "scanToAccess": "Escaneja el QR de l'esdeveniment per accedir.",
+    "inactive": "Aquest esdeveniment no està disponible en aquest moment.",
+    "noStages": "Encara no hi ha escenaris configurats."
+  },
+  "legal": {
+    "termsTitle": "Termes i condicions",
+    "privacyTitle": "Política de privadesa"
+  }
+}
