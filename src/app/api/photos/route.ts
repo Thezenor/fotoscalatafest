@@ -5,13 +5,12 @@ import {
   listApprovedPhotos,
   createUploadedPhoto,
   getActiveEvent,
-  applyAiModeration,
 } from "@/server/services/photo.service";
 import { createConsent } from "@/server/services/consent.service";
 import { saveObject } from "@/server/services/storage.service";
-import { makeThumbnail, makeWatermarked } from "@/server/services/image.service";
-import { analyzeImage } from "@/server/services/ai-moderation.service";
 import { rateLimit, clientIpFrom } from "@/server/services/ratelimit.service";
+import { enqueuePhotoProcessing } from "@/server/queue/photo-queue";
+import { processPhoto } from "@/server/queue/processor";
 
 export const runtime = "nodejs";
 
@@ -75,23 +74,6 @@ export async function POST(req: NextRequest) {
   const clean = await img.toBuffer();
   const originalKey = await saveObject(clean, file.type);
 
-  // Miniatura (galería) + versión con marca de agua (pública), según config del evento.
-  let thumbnailKey: string | null = null;
-  let watermarkedKey: string | null = null;
-  try {
-    const thumb = await makeThumbnail(clean);
-    thumbnailKey = await saveObject(thumb.buffer, thumb.mime);
-    const wm = await makeWatermarked(clean, {
-      enabled: event.watermarkEnabled,
-      position: event.watermarkPosition,
-      opacity: event.watermarkOpacity,
-    });
-    if (wm) watermarkedKey = await saveObject(wm.buffer, wm.mime);
-  } catch (err) {
-    console.error("[upload] fallo procesando imagen (thumb/watermark)", err);
-    // No bloquea la subida: se conserva el original.
-  }
-
   // Registro de consentimiento legal.
   const consent = await createConsent({
     eventId: event.id,
@@ -101,11 +83,10 @@ export async function POST(req: NextRequest) {
     userAgent: req.headers.get("user-agent"),
   });
 
+  // Foto en PENDING; el procesado (miniatura + marca de agua + IA) va aparte.
   const photo = await createUploadedPhoto({
     stageSlug,
     originalKey,
-    thumbnailKey,
-    watermarkedKey,
     mimeType: file.type,
     width: meta.width,
     height: meta.height,
@@ -121,16 +102,14 @@ export async function POST(req: NextRequest) {
     uploaderHash,
   });
 
-  // Moderación IA (Google Vision). Si no hay credenciales, queda PENDING (manual).
-  // TODO(escala): mover a un worker BullMQ para no bloquear la respuesta.
-  try {
-    const ai = await analyzeImage(clean);
-    await applyAiModeration(photo.id, ai, {
-      autoApproveOnAiClean: event.autoApproveOnAiClean,
-    });
-  } catch (err) {
-    console.error("[upload] moderación IA falló (queda PENDING)", err);
+  // Asíncrono: encola el procesado (worker). Si no hay cola, procesa inline.
+  const queued = await enqueuePhotoProcessing(photo.id);
+  if (!queued) {
+    await processPhoto(photo.id);
   }
 
-  return NextResponse.json({ ok: true, id: photo.id, status: "pending" }, { status: 201 });
+  return NextResponse.json(
+    { ok: true, id: photo.id, status: "pending", queued },
+    { status: 201 },
+  );
 }
